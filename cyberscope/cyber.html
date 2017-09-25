@@ -1,0 +1,119 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>Cyberscope 3, September 2017</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            background: rgb(0,0,0);
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+
+
+/* ======================== BootState ==============================*/
+/*  loads starting screen, shows some blitter image fx and gives control
+    to the content table of contents */
+
+var BootState = function (game){
+    this.gfx = null;
+    this.bmd = null;
+    this.screenSprite = null;
+    this.area = null;
+    this.dropTime = 0;
+    this.quest = 'go';
+    this.bmpText = null;
+    this.msg = "";
+    this.msgtoshow = "Cyberscope #3, 2017, by Almagest\n 20 years have passed since the legend was told last.\n So here we are then.\n ";
+    this.msgwords = null;
+    this.msgtail = 0;
+};
+
+BootState.prototype = {
+
+    init: function() {
+
+    },
+
+    preload: function() {
+        this.game.load.image('titlescreen', 'assets/cyberscope.jpeg');
+        this.game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
+    },
+
+    create: function() {
+        this.game.stage.backgroundColor = "#200000";
+
+        this.bmd = this.game.make.bitmapData();
+        this.bmd.load('titlescreen').cls();
+        this.screenSprite = this.game.add.sprite(0, 0, this.bmd);
+
+        this.game.stage.smoothed = false;
+        this.area = new Phaser.Rectangle(0, this.bmd.height, this.bmd.width, 1);
+        this.dropTime = this.game.time.now + 250;
+    },
+
+
+    update: function() {
+        if (this.quest == 'go') {
+            if (this.area.y > 0 && this.game.time.now > this.dropTime) {
+                var offset = 10;
+                for (var y = 0; y < this.area.y; y+=offset) {
+                    this.bmd.copyRect('titlescreen', this.area, 0, y);
+                }
+
+                this.area.y-=offset; 
+                this.dropTime = this.game.time.now + 1;
+
+                if (this.area.y <= 0) {
+                    this.quest = 'flash';
+                }
+            }
+        } else if (this.quest == 'flash') {
+            var sprite = this.game.add.sprite(0, this.screenSprite.y, 'titlescreen');
+            this.quest = 'hold';
+
+            var flash = this.game.add.graphics(0, 0);
+            flash.beginFill(0xffffff);
+            flash.alpha = 1;
+            flash.drawRect(0, 0, sprite.width, sprite.height);
+            flash.endFill();
+
+            //setTimeout(function(){
+                this.game.add.tween(flash).to({alpha:0},1000,Phaser.Easing.None,true);
+            //},2000);
+
+
+            // Hack for passing the context of this to timeout fn
+            var that = this;
+            setTimeout(function(){
+                that.msgwords = that.msgtoshow.split(" ");
+                that.msgtail = 0;
+                that.bmpText = that.game.add.bitmapText(32, 490, 'gem', that.msg, 12);
+                that.game.time.events.repeat(100, that.msgwords.length, that.showText, that);
+            }, 2000);
+        }
+
+    },
+
+    showText: function() {
+        this.msg = this.msg + " " + this.msgwords[this.msgtail];
+        // this.bmpText = this.game.add.bitmapText(32, 490, 'gem', this.msg, 16);        
+        this.msgtail++;
+        this.bmpText.text = this.msg;
+    }
+};
+
+game.state.add('Boot', BootState, false);
+game.state.start('Boot');
+
+</script>
+
+</body>
+</html>
