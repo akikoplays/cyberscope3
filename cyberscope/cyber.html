@@ -34,6 +34,9 @@ var BootState = function (game){
     this.msgtoshow = "Cyberscope #3, 2017, by Almagest\n 20 years have passed since the legend was told last.\n So here we are then.\n ";
     this.msgwords = null;
     this.msgtail = 0;
+    this.evtFlicker = null;
+
+    this.objs = [];
 };
 
 BootState.prototype = {
@@ -44,10 +47,12 @@ BootState.prototype = {
 
     preload: function() {
         this.game.load.image('titlescreen', 'assets/cyberscope.jpeg');
+        this.game.load.image('scape2', 'assets/scape2.jpg');
         this.game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
     },
 
     create: function() {
+
         this.game.stage.backgroundColor = "#200000";
 
         this.bmd = this.game.make.bitmapData();
@@ -61,9 +66,12 @@ BootState.prototype = {
 
 
     update: function() {
+        // Hack for passing the context of this to timeout fn
+        var that = this;
+
         if (this.quest == 'go') {
             if (this.area.y > 0 && this.game.time.now > this.dropTime) {
-                var offset = 10;
+                var offset = 4;
                 for (var y = 0; y < this.area.y; y+=offset) {
                     this.bmd.copyRect('titlescreen', this.area, 0, y);
                 }
@@ -76,30 +84,71 @@ BootState.prototype = {
                 }
             }
         } else if (this.quest == 'flash') {
-            var sprite = this.game.add.sprite(0, this.screenSprite.y, 'titlescreen');
+            this.objs["titlesprite"] = this.game.add.sprite(0, 0, 'titlescreen');
             this.quest = 'hold';
 
             var flash = this.game.add.graphics(0, 0);
             flash.beginFill(0xffffff);
             flash.alpha = 1;
-            flash.drawRect(0, 0, sprite.width, sprite.height);
+            flash.drawRect(0, 0, 
+                that.game.cache.getImage('titlescreen').width, that.game.cache.getImage('titlescreen').height);
             flash.endFill();
-
-            //setTimeout(function(){
-                this.game.add.tween(flash).to({alpha:0},1000,Phaser.Easing.None,true);
-            //},2000);
+            this.objs["flash"] = flash;
+            this.game.add.tween(this.objs["flash"]).to({alpha:0},1000,Phaser.Easing.None,true);
 
 
-            // Hack for passing the context of this to timeout fn
-            var that = this;
             setTimeout(function(){
                 that.msgwords = that.msgtoshow.split(" ");
                 that.msgtail = 0;
                 that.bmpText = that.game.add.bitmapText(32, 490, 'gem', that.msg, 12);
                 that.game.time.events.repeat(100, that.msgwords.length, that.showText, that);
             }, 2000);
-        }
 
+            // Let the title screen flicker a bit
+            // this.objs["flickval"] = 0.2;
+            // this.objs["flickthr"] = 0.8;
+            that.objs["titlesprite"].flickval = 0.2;
+            that.objs["titlesprite"].flickthr = 0.8;
+            flicker = function()
+            {
+                // var c = 0xff * ((that.objs["flickval"] * Math.random()) + that.objs["flickthr"]);
+                var c = 0xff * ((that.objs["titlesprite"].flickval * Math.random()) + that.objs["titlesprite"].flickthr);
+                that.objs["titlesprite"].tint = (c << 16) | (c << 8) | c;
+            };
+            that.evtFlicker = that.game.time.events.repeat(100, 1000000, flicker, that);
+        } else if (this.quest == 'hold') {
+            setTimeout(function(){
+                that.game.add.tween(that.objs["titlesprite"]).to({flickval:0.0},2000,Phaser.Easing.None,true);
+                that.objs["tween"] = that.game.add.tween(that.objs["titlesprite"]).to({flickthr:0.0},2000,Phaser.Easing.None,true);
+                that.objs["tween"].onComplete.add(function(){
+                    that.objs["flash"].alpha = 0;
+                    that.objs["titlesprite"].destroy();
+                    that.screenSprite.destroy();
+                    that.bmpText.text = " ";
+                    that.quest = "switchtocity";
+                }, that);
+            }, 10000);
+            this.quest = 'hold2';
+            console.log('quest set to hold2');
+        } else if (this.quest == 'switchtocity') {
+
+            that.objs["scape2"] = that.game.add.sprite(0, 0, "scape2");
+            that.game.add.tween(that.objs["scape2"]).to({x:-100},6000,Phaser.Easing.Sinusoidal.InOut,true);
+
+            var black = that.game.add.graphics(0, 0);
+            black.beginFill(0x000000);
+            black.alpha = 1;
+            black.drawRect(0, 0, 
+                that.game.cache.getImage('titlescreen').width, that.game.cache.getImage('titlescreen').height);
+            black.endFill();
+            that.objs["black"] = black;
+            that.objs["tween"] = that.game.add.tween(black).to({alpha:0},2000,Phaser.Easing.None,true);
+            that.objs["tween"].onComplete.add(function(){
+                // todo
+                // start text output
+            });
+            that.quest = 'holdcity';
+        }
     },
 
     showText: function() {
