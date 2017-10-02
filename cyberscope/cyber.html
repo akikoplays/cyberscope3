@@ -3,7 +3,9 @@
 <head> 
 	<meta charset="UTF-8" />
 	<title>Cyberscope 3, September 2017</title>
-    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <script src="//cdn.jsdelivr.net/phaser/2.6.2/phaser.min.js"></script>
+    <script src="intro.js"></script>
+
     <style type="text/css">
         body {
             margin: 0;
@@ -161,7 +163,8 @@ BootState.prototype = {
 };
 
 game.state.add('Boot', BootState, false);
-game.state.start('Boot');
+game.state.add('Intro', IntroState, false);
+game.state.start('Intro');
 
 </script>
 
