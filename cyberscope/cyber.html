@@ -49,7 +49,7 @@ BootState.prototype = {
 
     preload: function() {
         this.game.load.image('titlescreen', 'assets/cyberscope.jpeg');
-        this.game.load.image('scape2', 'assets/scape2.jpg');
+        this.game.load.image('midlight', 'assets/midlight-express.gif');
         this.game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
     },
 
@@ -134,8 +134,9 @@ BootState.prototype = {
             console.log('quest set to hold2');
         } else if (this.quest == 'switchtocity') {
 
-            that.objs["scape2"] = that.game.add.sprite(0, 0, "scape2");
-            that.game.add.tween(that.objs["scape2"]).to({x:-100},6000,Phaser.Easing.Sinusoidal.InOut,true);
+            // that.objs["scape2"] = that.game.add.sprite(0, 0, "scape2");
+            // that.game.add.tween(that.objs["scape2"]).to({x:-100},6000,Phaser.Easing.Sinusoidal.InOut,true);
+            that.objs["midlight"] = that.game.add.sprite(0, 0, "midlight");
 
             var black = that.game.add.graphics(0, 0);
             black.beginFill(0x000000);
