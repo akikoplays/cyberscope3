@@ -17,8 +17,8 @@
 
 <script type="text/javascript">
 
-const MUSIC_ON = true;
-
+const MUSIC_ON = false;
+const START_WITH = 'switchtokick'; // 'go'
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
 /* ======================== BootState ==============================*/
@@ -31,11 +31,10 @@ var BootState = function (game){
     this.screenSprite = null;
     this.area = null;
     this.dropTime = 0;
-    // this.quest = 'switchtokick';
-    this.quest = 'go';
+    this.quest = START_WITH;
     this.bmpText = null;
     this.msg = "";
-    this.msgtoshow = "Cyberscope #3, 2017, by Almagest\n 20 years have passed since the legend was told last.\n So here we are then.\n ";
+    this.msgtoshow = "Cyberscope #3, 2017, Almagest prod.\n 20 years have passed since the legend was told last.\n So here we are then.\n ";
     this.msgwords = null;
     this.msgtail = 0;
     this.evtFlicker = null;
@@ -60,6 +59,7 @@ BootState.prototype = {
         game.load.image('titlescreen', 'assets/cyberscope.jpeg');
         game.load.image('midlight', 'assets/midlight-express.gif');
         game.load.image('kickstart', 'assets/kickstart30.gif');
+        game.load.image('floppy', 'assets/floppy.png');
         game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
         game.load.script('protracker', 'protracker.js');
         game.load.binary('mod', 'assets/intermediate.mod', this.modLoaded, this);
@@ -92,8 +92,6 @@ BootState.prototype = {
         };
         this.objs['module'].buffer = game.cache.getBinary(this.objs['mod']);
         this.objs['module'].parse();
-
-
     },
 
 
@@ -162,6 +160,9 @@ BootState.prototype = {
         } else if (this.quest == 'switchtokick') {
 
             var sprite = game.add.sprite(0, 0, "kickstart");
+            that.objs['floppy'] = game.add.sprite(564, 318, 'floppy');
+            that.objs['floppy'].width = 170;
+            that.objs['floppy'].height = 180;
             that.objs["kickstart"] = sprite;
             sprite.width = 800;
             sprite.height = 600;    
@@ -175,6 +176,10 @@ BootState.prototype = {
             that.objs["black"] = black;
             that.objs["tween"] = game.add.tween(black).to({alpha:0},2000,Phaser.Easing.None,true);
             that.objs["tween"].onComplete.add(function(){
+
+                // animate diskette
+                game.add.tween(that.objs['floppy']).to({height:10}, 1000, Phaser.Easing.None, true);
+                game.add.tween(that.objs['floppy']).to({y:260}, 1000, Phaser.Easing.None, true);
                 // after 5 sec fade to black
                 game.time.events.add(3000, function() {
                     that.objs["black"] = black;

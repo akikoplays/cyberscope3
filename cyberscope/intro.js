@@ -80,7 +80,7 @@ IntroState.prototype = {
         space = TEXT_BLOCK_SPACE;
         size = 16;
 
-        that.objs['gfx'] = game.add.image(RIGHT_BLOCK_X, TEXT_Y - 30, gfx);
+        that.objs['gfx'] = game.add.image(game.width + RIGHT_BLOCK_X, TEXT_Y - 30, gfx);
         that.objs['titleSprite'] = game.add.image(LEFT_BLOCK_X, TITLE_Y, that.objs['titleFont']);
         that.objs['titleFont'].text = title;
         that.objs['titleSprite'].x = -that.objs['titleSprite'].width;
@@ -98,6 +98,7 @@ IntroState.prototype = {
         game.add.tween(that.objs['titleSprite']).to({x:LEFT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
         game.add.tween(that.bmpBlockLeft).to({x:LEFT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
         game.add.tween(that.bmpBlockRight).to({x:RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
+        game.add.tween(that.objs['gfx']).to({x:RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
 
         // add header and footer images
         that.objs['header'] = game.make.bitmapData();
