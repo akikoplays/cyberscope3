@@ -25,12 +25,20 @@ IntroState.prototype = {
     },
 
     preload: function() {
-        game.load.image('171', 'assets/171.png');
-        game.load.image('imgHeader', 'assets/header.png');
-        game.load.image('imgFooter', 'assets/footer.png');
-        game.load.image('midlight', 'assets/midlight-express.gif');
-        game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
-        game.load.json('contents', 'assets/contents.json');
+
+        // parse articles
+        json = game.cache.getJSON('contents');
+        console.log("contents json loaded: " + json);
+        for (i = 0; i < json.articles.length; i++) {
+            title = json.articles[i].title;
+            text = json.articles[i].body;
+            gfx = json.articles[i].gfx;
+            console.log(title + ", " + text + ", " + gfx);
+
+            game.load.image(gfx, 'assets/' + gfx);
+            console.log('loading: ' + 'assets/' + gfx);
+        }
+
     },
 
     fadein: function(onCompleteFn) {
@@ -48,6 +56,7 @@ IntroState.prototype = {
         that.objs["black"] = black;
         that.objs["tween"] = game.add.tween(black).to({alpha:0},2000,Phaser.Easing.None,true);
         that.objs["tween"].onComplete.add(function(){
+            // another way: 
             // game.time.events.add(2000, onCompleteFn, 0, that);
             game.time.events.add(2000, function() {
                 that.objs["tween"] = game.add.tween(that.objs['midlight']).to({alpha:0.33},500,Phaser.Easing.None,true);
@@ -61,7 +70,9 @@ IntroState.prototype = {
         json = game.cache.getJSON('contents');
         console.log(json);
         title = json.articles[0].title;
-        text = json.articles[0].body;
+        text = json.articles[0].body; // left text
+        text2 = json.articles[0].body2; // right text 
+        gfx = json.articles[0].gfx;
 
         y = TEXT_Y;
         x = TEXT_X;
@@ -69,22 +80,20 @@ IntroState.prototype = {
         space = TEXT_BLOCK_SPACE;
         size = 16;
 
-
-        that.objs['titleFont'] = game.add.retroFont('171', 16, 18, "ABCDEFGHIJKLMNOPQRSTUVWXYZ| 0123456789*=!ø:.,\\?->=:;+()`", 19, 0, 1);
+        that.objs['gfx'] = game.add.image(RIGHT_BLOCK_X, TEXT_Y - 30, gfx);
         that.objs['titleSprite'] = game.add.image(LEFT_BLOCK_X, TITLE_Y, that.objs['titleFont']);
         that.objs['titleFont'].text = title;
         that.objs['titleSprite'].x = -that.objs['titleSprite'].width;
-
 
         that.bmpBlockLeft = game.add.bitmapText(game.width, y, 'gem', "loading", size);
         that.bmpBlockLeft.tint = 0xeeddff;
         that.bmpBlockLeft.maxWidth = width;
         that.bmpBlockLeft.text = text;
 
-        that.bmpBlockRight = game.add.bitmapText(game.width + RIGHT_BLOCK_X, y, 'gem', "loading", size);
+        that.bmpBlockRight = game.add.bitmapText(game.width + RIGHT_BLOCK_X, y + that.objs['gfx'].height - 26, 'gem', "loading", size);
         that.bmpBlockRight.tint = 0xeeddff;
         that.bmpBlockRight.maxWidth = width;
-        that.bmpBlockRight.text = text;
+        that.bmpBlockRight.text = text2;
 
         game.add.tween(that.objs['titleSprite']).to({x:LEFT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
         game.add.tween(that.bmpBlockLeft).to({x:LEFT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
@@ -108,6 +117,8 @@ IntroState.prototype = {
 
         game.stage.backgroundColor = "#200000";
         game.stage.smoothed = false;
+
+        this.objs['titleFont'] = game.add.retroFont('171', 16, 18, "ABCDEFGHIJKLMNOPQRSTUVWXYZ| 0123456789*=!ø:.,\\?->=:;+()`", 19, 0, 1);
 
         this.fadein(this.showTOC);
 /*
