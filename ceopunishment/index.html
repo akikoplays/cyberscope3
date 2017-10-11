@@ -1,0 +1,162 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>CEOPunishment, October 2017</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.6.2/phaser.min.js"></script>
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            background: rgb(0,0,0);
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+const MUSIC_ON = false;
+const START_WITH = 'go';
+const speed = 3.5;
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+
+/* ======================== BootState ==============================*/
+/*  loads starting screen, shows some blitter image fx and gives control
+    to the content table of contents */
+
+var BootState = function (game){
+    this.objs = [];
+    this.quest = 'go';
+};
+
+BootState.prototype = {
+
+    init: function() {
+
+    },
+
+
+    modLoaded: function(key, data) {
+        this.objs['mod'] = key;
+        var buffer = new Uint8Array(data);
+        return buffer;
+    },
+
+    preload: function() {
+        //game.load.image('titlescreen', 'assets/cyberscope.jpeg');
+        game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
+        game.load.script('protracker', 'protracker.js');
+        game.load.binary('mod', 'assets/intermediate.mod', this.modLoaded, this);
+        game.load.image('171', 'assets/171.png');
+        game.load.image('city1', 'assets/ingame-city1.gif');
+
+        //  37x45 is the size of each frame
+        //  There are 18 frames in the PNG - you can leave this value blank if the frames fill up the entire PNG, but in this case there are some
+        //  blank frames at the end, so we tell the loader how many to load
+        game.load.spritesheet('bitch-walk', 'assets/sor3-bitch.png', 46, 90, 4);
+
+    },
+
+    create: function() {
+
+        game.stage.backgroundColor = "#0000a0";
+        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        game.scale.pageAlignHorizontally = true;
+        game.scale.pageAlignVertically = true;
+
+        game.stage.smoothed = false;
+        
+        this.objs['module'] = new Protracker();
+        that = this;
+        this.objs['module'].onReady = function() {
+            if (MUSIC_ON) that.objs['module'].play();
+        };
+        this.objs['module'].buffer = game.cache.getBinary(this.objs['mod']);
+        this.objs['module'].parse();
+
+        // background:
+        sprite = game.add.sprite(0, 0, 'city1');
+        this.objs['city1'] = sprite;
+
+        // main character
+        sprite = game.add.sprite(40, 530, 'bitch-walk');
+        sprite.animations.add('walk');
+        sprite.animations.play('walk', 10, true);
+        sprite.anchor.x = 0.5;
+        sprite.anchor.y = 1.0;
+        sprite.scale.x = 1.5;
+        sprite.scale.y = 1.5;
+        this.objs['bitch'] = sprite;
+
+        // Make the default camera follow the ufo.
+        game.world.setBounds(0,0,this.objs['city1'].width, this.objs['city1'].height);
+        game.camera.follow(sprite);
+
+        var rect = game.add.graphics(0, 0);
+        rect.beginFill(0x000000);
+        rect.alpha = 1;
+        rect.drawRect(400, 278, 
+            50, 54);
+        rect.endFill();
+        this.objs["rect"] = rect;
+
+        var rect2 = game.add.sprite(700, 280, rect.generateTexture());
+        this.objs["rect2"] = rect2;        
+        rect2.width = 260;
+        rect2.height = 4;
+        rect2.alpha = 0.4;
+
+        that = this;
+        game.time.events.add(100, that.flicker, that);
+        game.time.events.repeat(40, 10000000, that.rollo, that);
+    },
+
+    flicker: function() {
+        if (this.objs['rect'].alpha == 0)
+            this.objs['rect'].alpha = 1;
+        else
+            this.objs['rect'].alpha = 0;        
+        game.time.events.add(100, this.flicker, this);
+    },
+
+    rollo: function() {
+        var s = this.objs['rect2'];
+        s.y++;
+        if (s.y >= 304)
+            s.y = 280;
+    },
+
+    update: function() {
+        // Hack for passing the context of this to timeout fn
+        var that = this;
+        if (this.quest == 'go') {
+            // todo
+            if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+                if (this.objs['bitch'].animations.getAnimation('walk').isPlaying == false)
+                            this.objs['bitch'].animations.play('walk', 10, true);
+
+                this.objs['bitch'].x -= speed;
+                if (this.objs['bitch'].scale.x == 1.5)
+                    this.objs['bitch'].scale.x = -1.5
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+                if (this.objs['bitch'].animations.getAnimation('walk').isPlaying == false)
+                            this.objs['bitch'].animations.play('walk', 10, true);
+                this.objs['bitch'].x += speed;
+                if (this.objs['bitch'].scale.x == -1.5)
+                    this.objs['bitch'].scale.x = 1.5
+            } else {
+                this.objs['bitch'].animations.stop();
+            }
+        }
+    },
+
+};
+
+game.state.add('Boot', BootState, false);
+game.state.start('Boot');
+
+</script>
+
+</body>
+</html>
