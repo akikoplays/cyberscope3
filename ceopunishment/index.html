@@ -176,25 +176,6 @@ BootState.prototype = {
         this.objs['rain2'].x = this.objs['rain1'].x + this.objs['rain1'].width;
     },
 
-    // checkHitCollision: function() {
-    //     var actors = this.objs['actors'];
-
-    //     for (var key in actors){
-    //         var a = actors[key];
-    //         if (a.name == "player")
-    //             continue;
-    //         console.log('x:' + a.x + " y:" + a.y);
-    //         console.log('w:' + a.width + " h:" + a.height);            
-    //     }
-
-    //     // doesn't work with dictionaries, only arrays
-    //     // for (i=0; i<actors.length; i++) {
-    //     //     var a = actors[i];
-    //     //     console.log('x:' + a.x + " y:" + a.y);
-    //     //     console.log('w:' + a.width + " h:" + a.height);
-    //     // }
-    // },
-
     getActor: function(name) {
         return this.objs['actors'][name];
     },

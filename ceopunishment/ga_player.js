@@ -56,10 +56,16 @@ Player.prototype = {
                         var ga = actors[key];
                         if (ga == this)
                             continue;
-                        if (this.parent.isActorOverlapped(ga)) {
-                            ga.sprite.filters = [this.parent.filter];
+
+                        var dist = game.physics.arcade.distanceBetween(ga.sprite, this.sprite);
+                        console.log("Distance: " + dist);
+
+                        if (Math.abs(ga.sprite.y - this.sprite.y) < 20 && this.parent.isActorOverlapped(ga)) {
+                            ga.hit(this);
                         }
                     }
+
+
 
                     this.anim = this.sprite.animations.play('walk');
                     this.anim.stop();
