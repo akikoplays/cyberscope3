@@ -21,6 +21,26 @@ const START_WITH = 'go';
 const speed = 3.5;
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
+var fragmentSrc = [
+
+        "precision mediump float;",
+
+        "varying vec2 vTextureCoord;",
+        "uniform sampler2D uSampler;",
+
+        "void main(void) {",
+
+            "vec4 texColor = texture2D(uSampler, vTextureCoord);",
+
+            "if (texColor.a > 0.1) {",
+                "texColor = vec4(1.0, 1.0, 1.0, 1.0);",
+            "}",
+     
+            "gl_FragColor = texColor;",
+
+        "}"
+    ];
+
 /* ======================== BootState ==============================*/
 /*  loads starting screen, shows some blitter image fx and gives control
     to the content table of contents */
@@ -44,7 +64,6 @@ BootState.prototype = {
     },
 
     preload: function() {
-        //game.load.image('titlescreen', 'assets/cyberscope.jpeg');
         game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
         game.load.script('protracker', 'protracker.js');
         game.load.binary('mod', 'assets/intermediate.mod', this.modLoaded, this);
@@ -55,9 +74,13 @@ BootState.prototype = {
         //  37x45 is the size of each frame
         //  There are 18 frames in the PNG - you can leave this value blank if the frames fill up the entire PNG, but in this case there are some
         //  blank frames at the end, so we tell the loader how many to load
-        game.load.spritesheet('bitch-walk', 'assets/sor3-bitch.png', 46, 90, 4);
-        game.load.spritesheet('trisha-dance', 'assets/trisha-dance.png', 57, 103, 9);
+        // game.load.spritesheet('bitch-walk', 'assets/bitch/sor3-bitch.png', 46, 90, 4);
+        // game.load.spritesheet('trisha-dance', 'assets/trisha/trisha-dance.png', 57, 103, 9);
 
+        game.load.atlas('bitch', 'assets/bitch/sprites.png', 'assets/bitch/sprites.js', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+        game.load.atlas('trisha', 'assets/trisha/sprites.png', 'assets/trisha/sprites.js', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+
+        this.filter = new Phaser.Filter(game, null, fragmentSrc);
     },
 
     create: function() {
@@ -77,33 +100,45 @@ BootState.prototype = {
         this.objs['module'].buffer = game.cache.getBinary(this.objs['mod']);
         this.objs['module'].parse();
 
+        // list of actors
+        this.objs['actors'] = [];
+
         // background:
         sprite = game.add.sprite(0, 0, 'city1');
         this.objs['city1'] = sprite;
 
         // main character
-        sprite = game.add.sprite(40, 530, 'bitch-walk');
-        sprite.animations.add('walk');
-        sprite.animations.play('walk', 10, true);
+        sprite = game.add.sprite(40, 530, 'bitch');
+        sprite.animations.add('walk', Phaser.ArrayUtils.numberArray(0,3), 10, false);
+        sprite.animations.add('whip', Phaser.ArrayUtils.numberArray(11,19), 10, false);
         sprite.anchor.x = 0.5;
         sprite.anchor.y = 1.0;
         sprite.scale.x = 1.5;
         sprite.scale.y = 1.5;
-        this.objs['bitch'] = sprite;
+        sprite.filters = null;//[this.filter];
+        sprite.name = 'player';
+        sprite.type = 'actor';
+        // this.objs['bitch'] = sprite;
+        game.physics.enable(sprite, Phaser.Physics.ARCADE);
+        this.objs['actors'][sprite.name] = sprite;
 
         // trisha character
-        sprite = game.add.sprite(800, 580, 'trisha-dance');
-        sprite.animations.add('dance');
-        sprite.animations.play('dance', 15, true);
+        sprite = game.add.sprite(800, 580, 'trisha'); 
+        sprite.animations.add('dance', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
+        sprite.animations.play('dance');
         sprite.anchor.x = 0;
         sprite.anchor.y = 1.0;
         sprite.scale.x = 1.5;
         sprite.scale.y = 1.5;
-        this.objs['trisha'] = sprite;
+        sprite.name = 'trisha';
+        sprite.type = 'actor';
+        // this.objs['trisha'] = sprite;
+        game.physics.enable(sprite, Phaser.Physics.ARCADE);
+        this.objs['actors'][sprite.name] = sprite;
 
         // Make the default camera follow the ufo.
         game.world.setBounds(0,0,this.objs['city1'].width, this.objs['city1'].height);
-        game.camera.follow(this.objs['bitch']);
+        game.camera.follow(this.getActor('player'));
 
         var rect = game.add.graphics(0, 0);
         rect.beginFill(0x000000);
@@ -132,7 +167,7 @@ BootState.prototype = {
         game.time.events.repeat(50, 10000000, that.rain, that);
     },
 
-    flicker: function() {
+   flicker: function() {
         if (this.objs['rect'].alpha == 0)
             this.objs['rect'].alpha = 1;
         else
@@ -152,12 +187,39 @@ BootState.prototype = {
         this.objs['rain2'].x = this.objs['rain1'].x + this.objs['rain1'].width;
     },
 
+    collisionHandler:function (obj1, obj2) {
+        game.stage.backgroundColor = '#992d2d';
+        console.log('HIT');
+    },
+
+    checkHitCollision: function() {
+        var actors = this.objs['actors'];
+
+        for (var key in actors){
+            var a = actors[key];
+            if (a.name == "player")
+                continue;
+            console.log('x:' + a.x + " y:" + a.y);
+            console.log('w:' + a.width + " h:" + a.height);            
+        }
+
+        // doesn't work with dictionaries, only arrays
+        // for (i=0; i<actors.length; i++) {
+        //     var a = actors[i];
+        //     console.log('x:' + a.x + " y:" + a.y);
+        //     console.log('w:' + a.width + " h:" + a.height);
+        // }
+    },
+
+    getActor: function(name) {
+        return this.objs['actors'][name];
+    },
+
     update: function() {
         // Hack for passing the context of this to timeout fn
         var that = this;
         if (this.quest == 'go') {
-            // todo
-
+        
             var flags = 0;
             if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
                 flags |= 1;
@@ -168,37 +230,59 @@ BootState.prototype = {
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
                 flags |= 1 << 3;
 
-            if (flags & 1) {
-                if (this.objs['bitch'].animations.getAnimation('walk').isPlaying == false)
-                            this.objs['bitch'].animations.play('walk', 10, true);
+            if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+                if (this.anim && this.anim.name != 'whip') {
+                    this.getActor('player').animations.stop();
+                    this.anim = this.getActor('player').animations.play('whip');
+                    this.getActor('player').filters = [this.filter];
+                }
+            }
 
-                this.objs['bitch'].x -= speed;
-                if (this.objs['bitch'].scale.x == 1.5)
-                    this.objs['bitch'].scale.x = -1.5
+            if (this.anim && this.anim.name == 'whip') {
+                if (!this.anim.isFinished) {
+                    flags = 0;
+                    this.checkHitCollision();
+                }
+                else {
+                    this.anim = this.getActor('player').animations.play('walk');
+                    this.anim.stop();
+                    this.getActor('player').filters = null;
+                }
+            } else if (this.anim && this.anim.name == 'walk') {
+                if (this.anim.isFinished)
+                    this.anim.stop();
+            }
+
+            if (flags & 1) {
+                if (this.getActor('player').animations.getAnimation('walk').isPlaying == false)
+                            this.anim = this.getActor('player').animations.play('walk');
+
+                this.getActor('player').x -= speed;
+                if (this.getActor('player').scale.x == 1.5)
+                    this.getActor('player').scale.x = -1.5
             } 
             if (flags & (1 << 1)) {
-                if (this.objs['bitch'].animations.getAnimation('walk').isPlaying == false)
-                            this.objs['bitch'].animations.play('walk', 10, true);
-                this.objs['bitch'].x += speed;
-                if (this.objs['bitch'].scale.x == -1.5)
-                    this.objs['bitch'].scale.x = 1.5
+                if (this.getActor('player').animations.getAnimation('walk').isPlaying == false)
+                            this.anim = this.getActor('player').animations.play('walk');
+                this.getActor('player').x += speed;
+                if (this.getActor('player').scale.x == -1.5)
+                    this.getActor('player').scale.x = 1.5
             }
             if (flags & (1 << 2)) {
-                this.objs['bitch'].animations.play('walk', 10, true);
-                this.objs['bitch'].y += speed;
+                this.getActor('player').animations.play('walk');
+                this.getActor('player').y += speed;
             }
             if (flags & (1 << 3)) {
-                this.objs['bitch'].animations.play('walk', 10, true);
-                this.objs['bitch'].y -= speed;
+                this.anim = this.getActor('player').animations.play('walk');
+                this.getActor('player').y -= speed;
             } 
-            if (flags == 0) {
-                this.objs['bitch'].animations.stop();
-            }
 
-            if (this.objs['bitch'].x < 0) this.objs['bitch'].x = 0;
-            if (this.objs['bitch'].x > this.objs['city1'].width - 40) this.objs['bitch'].x = this.objs['city1'].width - 40;
-            if (this.objs['bitch'].y < 530) this.objs['bitch'].y = 530;
-            if (this.objs['bitch'].y > 600) this.objs['bitch'].y = 600;
+            if (this.getActor('player').x < 0) 
+                this.getActor('player').x = 0;
+            if (this.getActor('player').x > this.objs['city1'].width - 40) 
+                this.getActor('player').x = this.objs['city1'].width - 40;
+            if (this.getActor('player').y < 530) this.getActor('player').y = 530;
+            if (this.getActor('player').y > 600) this.getActor('player').y = 600;
         }
     },
 
