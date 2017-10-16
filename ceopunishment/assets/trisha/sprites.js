@@ -1,500 +1,568 @@
 {
-"frames": {
-	"trisha_01.png": {
-		"frame": {"x":450, "y":317, "w":40, "h":73},
+"frames": [
+	{
+		"filename": "trisha-optim_01.png",
+		"frame": {"x":210, "y":122, "w":40, "h":73},
 		"spriteSourceSize": {"x":0,"y":0,"w":40,"h":73},
 		"sourceSize": {"w":40,"h":73}
 	},
-	"trisha_02.png": {
-		"frame": {"x":491, "y":449, "w":38, "h":75},
+	{
+		"filename": "trisha-optim_02.png",
+		"frame": {"x":251, "y":73, "w":38, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":75},
 		"sourceSize": {"w":38,"h":75}
 	},
-	"trisha_03.png": {
-		"frame": {"x":452, "y":145, "w":39, "h":77},
+	{
+		"filename": "trisha-optim_03.png",
+		"frame": {"x":240, "y":460, "w":39, "h":77},
 		"spriteSourceSize": {"x":0,"y":0,"w":39,"h":77},
 		"sourceSize": {"w":39,"h":77}
 	},
-	"trisha_04.png": {
-		"frame": {"x":491, "y":373, "w":39, "h":75},
+	{
+		"filename": "trisha-optim_04.png",
+		"frame": {"x":236, "y":552, "w":39, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":39,"h":75},
 		"sourceSize": {"w":39,"h":75}
 	},
-	"trisha_05.png": {
-		"frame": {"x":405, "y":0, "w":44, "h":73},
+	{
+		"filename": "trisha-optim_05.png",
+		"frame": {"x":190, "y":947, "w":44, "h":73},
 		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":73},
 		"sourceSize": {"w":44,"h":73}
 	},
-	"trisha_06.png": {
-		"frame": {"x":450, "y":73, "w":40, "h":71},
+	{
+		"filename": "trisha-optim_06.png",
+		"frame": {"x":235, "y":933, "w":40, "h":71},
 		"spriteSourceSize": {"x":0,"y":0,"w":40,"h":71},
 		"sourceSize": {"w":40,"h":71}
 	},
-	"trisha_07.png": {
-		"frame": {"x":491, "y":298, "w":39, "h":74},
+	{
+		"filename": "trisha-optim_07.png",
+		"frame": {"x":244, "y":349, "w":39, "h":74},
 		"spriteSourceSize": {"x":0,"y":0,"w":39,"h":74},
 		"sourceSize": {"w":39,"h":74}
 	},
-	"trisha_08.png": {
-		"frame": {"x":491, "y":223, "w":39, "h":74},
+	{
+		"filename": "trisha-optim_08.png",
+		"frame": {"x":236, "y":628, "w":39, "h":74},
 		"spriteSourceSize": {"x":0,"y":0,"w":39,"h":74},
 		"sourceSize": {"w":39,"h":74}
 	},
-	"trisha_09.png": {
-		"frame": {"x":451, "y":391, "w":39, "h":73},
+	{
+		"filename": "trisha-optim_09.png",
+		"frame": {"x":236, "y":859, "w":39, "h":73},
 		"spriteSourceSize": {"x":0,"y":0,"w":39,"h":73},
 		"sourceSize": {"w":39,"h":73}
 	},
-	"trisha_10.png": {
-		"frame": {"x":567, "y":0, "w":24, "h":77},
+	{
+		"filename": "trisha-optim_10.png",
+		"frame": {"x":311, "y":442, "w":24, "h":77},
 		"spriteSourceSize": {"x":0,"y":0,"w":24,"h":77},
 		"sourceSize": {"w":24,"h":77}
 	},
-	"trisha_11.png": {
-		"frame": {"x":564, "y":78, "w":28, "h":75},
+	{
+		"filename": "trisha-optim_11.png",
+		"frame": {"x":284, "y":277, "w":28, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":75},
 		"sourceSize": {"w":28,"h":75}
 	},
-	"trisha_12.png": {
-		"frame": {"x":354, "y":236, "w":49, "h":75},
+	{
+		"filename": "trisha-optim_12.png",
+		"frame": {"x":151, "y":219, "w":49, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":49,"h":75},
 		"sourceSize": {"w":49,"h":75}
 	},
-	"trisha_13.png": {
-		"frame": {"x":564, "y":231, "w":27, "h":77},
+	{
+		"filename": "trisha-optim_13.png",
+		"frame": {"x":307, "y":945, "w":27, "h":77},
 		"spriteSourceSize": {"x":0,"y":0,"w":27,"h":77},
 		"sourceSize": {"w":27,"h":77}
 	},
-	"trisha_14.png": {
-		"frame": {"x":564, "y":154, "w":28, "h":76},
+	{
+		"filename": "trisha-optim_14.png",
+		"frame": {"x":287, "y":149, "w":28, "h":76},
 		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":76},
 		"sourceSize": {"w":28,"h":76}
 	},
-	"trisha_15.png": {
-		"frame": {"x":304, "y":0, "w":51, "h":75},
+	{
+		"filename": "trisha-optim_15.png",
+		"frame": {"x":136, "y":673, "w":51, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":51,"h":75},
 		"sourceSize": {"w":51,"h":75}
 	},
-	"trisha_16.png": {
-		"frame": {"x":298, "y":138, "w":55, "h":71},
+	{
+		"filename": "trisha-optim_16.png",
+		"frame": {"x":135, "y":875, "w":55, "h":71},
 		"spriteSourceSize": {"x":0,"y":0,"w":55,"h":71},
 		"sourceSize": {"w":55,"h":71}
 	},
-	"trisha_17.png": {
-		"frame": {"x":356, "y":0, "w":48, "h":69},
+	{
+		"filename": "trisha-optim_17.png",
+		"frame": {"x":166, "y":52, "w":48, "h":69},
 		"spriteSourceSize": {"x":0,"y":0,"w":48,"h":69},
 		"sourceSize": {"w":48,"h":69}
 	},
-	"trisha_18.png": {
-		"frame": {"x":493, "y":525, "w":34, "h":69},
+	{
+		"filename": "trisha-optim_18.png",
+		"frame": {"x":248, "y":277, "w":34, "h":69},
 		"spriteSourceSize": {"x":0,"y":0,"w":34,"h":69},
 		"sourceSize": {"w":34,"h":69}
 	},
-	"trisha_19.png": {
-		"frame": {"x":302, "y":313, "w":51, "h":71},
+	{
+		"filename": "trisha-optim_19.png",
+		"frame": {"x":136, "y":749, "w":51, "h":71},
 		"spriteSourceSize": {"x":0,"y":0,"w":51,"h":71},
 		"sourceSize": {"w":51,"h":71}
 	},
-	"trisha_20.png": {
-		"frame": {"x":403, "y":458, "w":47, "h":69},
+	{
+		"filename": "trisha-optim_20.png",
+		"frame": {"x":188, "y":624, "w":47, "h":69},
 		"spriteSourceSize": {"x":0,"y":0,"w":47,"h":69},
 		"sourceSize": {"w":47,"h":69}
 	},
-	"trisha_21.png": {
-		"frame": {"x":531, "y":154, "w":32, "h":68},
+	{
+		"filename": "trisha-optim_21.png",
+		"frame": {"x":256, "y":0, "w":32, "h":68},
 		"spriteSourceSize": {"x":0,"y":0,"w":32,"h":68},
 		"sourceSize": {"w":32,"h":68}
 	},
-	"trisha_22.png": {
-		"frame": {"x":451, "y":465, "w":35, "h":61},
+	{
+		"filename": "trisha-optim_22.png",
+		"frame": {"x":236, "y":703, "w":35, "h":61},
 		"spriteSourceSize": {"x":0,"y":0,"w":35,"h":61},
 		"sourceSize": {"w":35,"h":61}
 	},
-	"trisha_23.png": {
-		"frame": {"x":302, "y":385, "w":46, "h":50},
+	{
+		"filename": "trisha-optim_23.png",
+		"frame": {"x":136, "y":821, "w":46, "h":50},
 		"spriteSourceSize": {"x":0,"y":0,"w":46,"h":50},
 		"sourceSize": {"w":46,"h":50}
 	},
-	"trisha_24.png": {
-		"frame": {"x":121, "y":0, "w":69, "h":47},
+	{
+		"filename": "trisha-optim_24.png",
+		"frame": {"x":0, "y":700, "w":69, "h":47},
 		"spriteSourceSize": {"x":0,"y":0,"w":69,"h":47},
 		"sourceSize": {"w":69,"h":47}
 	},
-	"trisha_25.png": {
-		"frame": {"x":246, "y":138, "w":51, "h":51},
+	{
+		"filename": "trisha-optim_25.png",
+		"frame": {"x":121, "y":0, "w":51, "h":51},
 		"spriteSourceSize": {"x":0,"y":0,"w":51,"h":51},
 		"sourceSize": {"w":51,"h":51}
 	},
-	"trisha_26.png": {
-		"frame": {"x":252, "y":0, "w":37, "h":47},
+	{
+		"filename": "trisha-optim_26.png",
+		"frame": {"x":206, "y":349, "w":37, "h":47},
 		"spriteSourceSize": {"x":0,"y":0,"w":37,"h":47},
 		"sourceSize": {"w":37,"h":47}
 	},
-	"trisha_27.png": {
-		"frame": {"x":451, "y":465, "w":35, "h":61},
+	{
+		"filename": "trisha-optim_27.png",
+		"frame": {"x":236, "y":703, "w":35, "h":61},
 		"spriteSourceSize": {"x":0,"y":0,"w":35,"h":61},
 		"sourceSize": {"w":35,"h":61}
 	},
-	"trisha_28.png": {
-		"frame": {"x":491, "y":0, "w":38, "h":80},
+	{
+		"filename": "trisha-optim_28.png",
+		"frame": {"x":248, "y":196, "w":38, "h":80},
 		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":80},
 		"sourceSize": {"w":38,"h":80}
 	},
-	"trisha_29.png": {
-		"frame": {"x":531, "y":297, "w":32, "h":72},
+	{
+		"filename": "trisha-optim_29.png",
+		"frame": {"x":289, "y":0, "w":32, "h":72},
 		"spriteSourceSize": {"x":0,"y":0,"w":32,"h":72},
 		"sourceSize": {"w":32,"h":72}
 	},
-	"trisha_30.png": {
-		"frame": {"x":304, "y":76, "w":48, "h":56},
+	{
+		"filename": "trisha-optim_30.png",
+		"frame": {"x":161, "y":151, "w":48, "h":56},
 		"spriteSourceSize": {"x":0,"y":0,"w":48,"h":56},
 		"sourceSize": {"w":48,"h":56}
 	},
-	"trisha_31.png": {
-		"frame": {"x":244, "y":283, "w":55, "h":56},
+	{
+		"filename": "trisha-optim_31.png",
+		"frame": {"x":134, "y":950, "w":55, "h":56},
 		"spriteSourceSize": {"x":0,"y":0,"w":55,"h":56},
 		"sourceSize": {"w":55,"h":56}
 	},
-	"trisha_32.png": {
-		"frame": {"x":0, "y":186, "w":103, "h":46},
+	{
+		"filename": "trisha-optim_32.png",
+		"frame": {"x":0, "y":55, "w":103, "h":46},
 		"spriteSourceSize": {"x":0,"y":0,"w":103,"h":46},
 		"sourceSize": {"w":103,"h":46}
 	},
-	"trisha_33.png": {
-		"frame": {"x":0, "y":233, "w":103, "h":46},
+	{
+		"filename": "trisha-optim_33.png",
+		"frame": {"x":0, "y":163, "w":103, "h":46},
 		"spriteSourceSize": {"x":0,"y":0,"w":103,"h":46},
 		"sourceSize": {"w":103,"h":46}
 	},
-	"trisha_34.png": {
-		"frame": {"x":0, "y":280, "w":99, "h":46},
+	{
+		"filename": "trisha-optim_34.png",
+		"frame": {"x":0, "y":210, "w":99, "h":46},
 		"spriteSourceSize": {"x":0,"y":0,"w":99,"h":46},
 		"sourceSize": {"w":99,"h":46}
 	},
-	"trisha_35.png": {
-		"frame": {"x":530, "y":0, "w":36, "h":77},
+	{
+		"filename": "trisha-optim_35.png",
+		"frame": {"x":275, "y":779, "w":36, "h":77},
 		"spriteSourceSize": {"x":0,"y":0,"w":36,"h":77},
 		"sourceSize": {"w":36,"h":77}
 	},
-	"trisha_36.png": {
-		"frame": {"x":404, "y":157, "w":47, "h":72},
+	{
+		"filename": "trisha-optim_36.png",
+		"frame": {"x":188, "y":694, "w":47, "h":72},
 		"spriteSourceSize": {"x":0,"y":0,"w":47,"h":72},
 		"sourceSize": {"w":47,"h":72}
 	},
-	"trisha_37.png": {
-		"frame": {"x":107, "y":55, "w":71, "h":60},
+	{
+		"filename": "trisha-optim_37.png",
+		"frame": {"x":0, "y":604, "w":71, "h":60},
 		"spriteSourceSize": {"x":0,"y":0,"w":71,"h":60},
 		"sourceSize": {"w":71,"h":60}
 	},
-	"trisha_38.png": {
-		"frame": {"x":403, "y":528, "w":44, "h":71},
+	{
+		"filename": "trisha-optim_38.png",
+		"frame": {"x":191, "y":861, "w":44, "h":71},
 		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":71},
 		"sourceSize": {"w":44,"h":71}
 	},
-	"trisha_39.png": {
-		"frame": {"x":168, "y":526, "w":68, "h":66},
+	{
+		"filename": "trisha-optim_39.png",
+		"frame": {"x":0, "y":748, "w":68, "h":66},
 		"spriteSourceSize": {"x":0,"y":0,"w":68,"h":66},
 		"sourceSize": {"w":68,"h":66}
 	},
-	"trisha_40.png": {
-		"frame": {"x":450, "y":0, "w":40, "h":72},
+	{
+		"filename": "trisha-optim_40.png",
+		"frame": {"x":215, "y":0, "w":40, "h":72},
 		"spriteSourceSize": {"x":0,"y":0,"w":40,"h":72},
 		"sourceSize": {"w":40,"h":72}
 	},
-	"trisha_41.png": {
-		"frame": {"x":562, "y":370, "w":30, "h":72},
+	{
+		"filename": "trisha-optim_41.png",
+		"frame": {"x":280, "y":424, "w":30, "h":72},
 		"spriteSourceSize": {"x":0,"y":0,"w":30,"h":72},
 		"sourceSize": {"w":30,"h":72}
 	},
-	"trisha_42.png": {
-		"frame": {"x":355, "y":391, "w":48, "h":66},
+	{
+		"filename": "trisha-optim_42.png",
+		"frame": {"x":151, "y":405, "w":48, "h":66},
 		"spriteSourceSize": {"x":0,"y":0,"w":48,"h":66},
 		"sourceSize": {"w":48,"h":66}
 	},
-	"trisha_43.png": {
-		"frame": {"x":531, "y":370, "w":30, "h":76},
+	{
+		"filename": "trisha-optim_43.png",
+		"frame": {"x":276, "y":945, "w":30, "h":76},
 		"spriteSourceSize": {"x":0,"y":0,"w":30,"h":76},
 		"sourceSize": {"w":30,"h":76}
 	},
-	"trisha_44.png": {
-		"frame": {"x":352, "y":521, "w":50, "h":75},
+	{
+		"filename": "trisha-optim_44.png",
+		"frame": {"x":144, "y":480, "w":50, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":50,"h":75},
 		"sourceSize": {"w":50,"h":75}
 	},
-	"trisha_45.png": {
-		"frame": {"x":492, "y":81, "w":38, "h":75},
+	{
+		"filename": "trisha-optim_45.png",
+		"frame": {"x":275, "y":703, "w":38, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":75},
 		"sourceSize": {"w":38,"h":75}
 	},
-	"trisha_46.png": {
-		"frame": {"x":240, "y":362, "w":61, "h":73},
+	{
+		"filename": "trisha-optim_46.png",
+		"frame": {"x":88, "y":326, "w":61, "h":73},
 		"spriteSourceSize": {"x":0,"y":0,"w":61,"h":73},
 		"sourceSize": {"w":61,"h":73}
 	},
-	"trisha_47.png": {
-		"frame": {"x":405, "y":74, "w":44, "h":79},
+	{
+		"filename": "trisha-optim_47.png",
+		"frame": {"x":195, "y":472, "w":44, "h":79},
 		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":79},
 		"sourceSize": {"w":44,"h":79}
 	},
-	"trisha_48.png": {
-		"frame": {"x":492, "y":81, "w":38, "h":75},
+	{
+		"filename": "trisha-optim_48.png",
+		"frame": {"x":275, "y":703, "w":38, "h":75},
 		"spriteSourceSize": {"x":0,"y":0,"w":38,"h":75},
 		"sourceSize": {"w":38,"h":75}
 	},
-	"trisha_49.png": {
-		"frame": {"x":451, "y":230, "w":39, "h":77},
-		"spriteSourceSize": {"x":0,"y":0,"w":39,"h":77},
-		"sourceSize": {"w":39,"h":77}
-	},
-	"trisha_50.png": {
-		"frame": {"x":531, "y":78, "w":32, "h":75},
-		"spriteSourceSize": {"x":0,"y":0,"w":32,"h":75},
-		"sourceSize": {"w":32,"h":75}
-	},
-	"trisha_51.png": {
-		"frame": {"x":528, "y":538, "w":32, "h":58},
-		"spriteSourceSize": {"x":0,"y":0,"w":32,"h":58},
-		"sourceSize": {"w":32,"h":58}
-	},
-	"trisha_52.png": {
-		"frame": {"x":300, "y":259, "w":52, "h":53},
-		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":53},
-		"sourceSize": {"w":52,"h":53}
-	},
-	"trisha_53.png": {
-		"frame": {"x":191, "y":0, "w":60, "h":47},
-		"spriteSourceSize": {"x":0,"y":0,"w":60,"h":47},
-		"sourceSize": {"w":60,"h":47}
-	},
-	"trisha_54.png": {
-		"frame": {"x":100, "y":280, "w":72, "h":42},
-		"spriteSourceSize": {"x":0,"y":0,"w":72,"h":42},
-		"sourceSize": {"w":72,"h":42}
-	},
-	"trisha_55.png": {
-		"frame": {"x":528, "y":538, "w":32, "h":58},
-		"spriteSourceSize": {"x":0,"y":0,"w":32,"h":58},
-		"sourceSize": {"w":32,"h":58}
-	},
-	"trisha_56.png": {
-		"frame": {"x":355, "y":458, "w":45, "h":60},
-		"spriteSourceSize": {"x":0,"y":0,"w":45,"h":60},
-		"sourceSize": {"w":45,"h":60}
-	},
-	"trisha_57.png": {
-		"frame": {"x":298, "y":210, "w":55, "h":48},
-		"spriteSourceSize": {"x":0,"y":0,"w":55,"h":48},
-		"sourceSize": {"w":55,"h":48}
-	},
-	"trisha_58.png": {
-		"frame": {"x":96, "y":380, "w":66, "h":32},
-		"spriteSourceSize": {"x":0,"y":0,"w":66,"h":32},
-		"sourceSize": {"w":66,"h":32}
-	},
-	"trisha_59.png": {
-		"frame": {"x":299, "y":521, "w":52, "h":67},
-		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":67},
-		"sourceSize": {"w":52,"h":67}
-	},
-	"trisha_60.png": {
-		"frame": {"x":530, "y":449, "w":36, "h":88},
-		"spriteSourceSize": {"x":0,"y":0,"w":36,"h":88},
-		"sourceSize": {"w":36,"h":88}
-	},
-	"trisha_61.png": {
-		"frame": {"x":87, "y":535, "w":79, "h":60},
-		"spriteSourceSize": {"x":0,"y":0,"w":79,"h":60},
-		"sourceSize": {"w":79,"h":60}
-	},
-	"trisha_62.png": {
-		"frame": {"x":168, "y":380, "w":71, "h":76},
-		"spriteSourceSize": {"x":0,"y":0,"w":71,"h":76},
-		"sourceSize": {"w":71,"h":76}
-	},
-	"trisha_63.png": {
-		"frame": {"x":404, "y":230, "w":46, "h":86},
-		"spriteSourceSize": {"x":0,"y":0,"w":46,"h":86},
-		"sourceSize": {"w":46,"h":86}
-	},
-	"trisha_64.png": {
-		"frame": {"x":240, "y":194, "w":57, "h":88},
-		"spriteSourceSize": {"x":0,"y":0,"w":57,"h":88},
-		"sourceSize": {"w":57,"h":88}
-	},
-	"trisha_65.png": {
-		"frame": {"x":104, "y":180, "w":77, "h":54},
-		"spriteSourceSize": {"x":0,"y":0,"w":77,"h":54},
-		"sourceSize": {"w":77,"h":54}
-	},
-	"trisha_66.png": {
-		"frame": {"x":448, "y":528, "w":44, "h":71},
-		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":71},
-		"sourceSize": {"w":44,"h":71}
-	},
-	"trisha_67.png": {
-		"frame": {"x":451, "y":465, "w":35, "h":61},
-		"spriteSourceSize": {"x":0,"y":0,"w":35,"h":61},
-		"sourceSize": {"w":35,"h":61}
-	},
-	"trisha_68.png": {
-		"frame": {"x":0, "y":415, "w":87, "h":71},
+	{
+		"filename": "trisha-optim_49.png",
+		"frame": {"x":0, "y":333, "w":87, "h":71},
 		"spriteSourceSize": {"x":0,"y":0,"w":87,"h":71},
 		"sourceSize": {"w":87,"h":71}
 	},
-	"trisha_69.png": {
-		"frame": {"x":0, "y":487, "w":86, "h":69},
+	{
+		"filename": "trisha-optim_50.png",
+		"frame": {"x":0, "y":405, "w":86, "h":69},
 		"spriteSourceSize": {"x":0,"y":0,"w":86,"h":69},
 		"sourceSize": {"w":86,"h":69}
 	},
-	"trisha_70.png": {
-		"frame": {"x":168, "y":457, "w":68, "h":68},
+	{
+		"filename": "trisha-optim_51.png",
+		"frame": {"x":0, "y":898, "w":68, "h":68},
 		"spriteSourceSize": {"x":0,"y":0,"w":68,"h":68},
 		"sourceSize": {"w":68,"h":68}
 	},
-	"trisha_71.png": {
-		"frame": {"x":173, "y":235, "w":66, "h":64},
+	{
+		"filename": "trisha-optim_52.png",
+		"frame": {"x":69, "y":810, "w":66, "h":64},
 		"spriteSourceSize": {"x":0,"y":0,"w":66,"h":64},
 		"sourceSize": {"w":66,"h":64}
 	},
-	"trisha_72.png": {
-		"frame": {"x":179, "y":48, "w":64, "h":70},
+	{
+		"filename": "trisha-optim_53.png",
+		"frame": {"x":69, "y":950, "w":64, "h":70},
 		"spriteSourceSize": {"x":0,"y":0,"w":64,"h":70},
 		"sourceSize": {"w":64,"h":70}
 	},
-	"trisha_73.png": {
-		"frame": {"x":177, "y":300, "w":66, "h":61},
+	{
+		"filename": "trisha-optim_54.png",
+		"frame": {"x":69, "y":748, "w":66, "h":61},
 		"spriteSourceSize": {"x":0,"y":0,"w":66,"h":61},
 		"sourceSize": {"w":66,"h":61}
 	},
-	"trisha_74.png": {
-		"frame": {"x":0, "y":125, "w":103, "h":60},
+	{
+		"filename": "trisha-optim_55.png",
+		"frame": {"x":0, "y":102, "w":103, "h":60},
 		"spriteSourceSize": {"x":0,"y":0,"w":103,"h":60},
 		"sourceSize": {"w":103,"h":60}
 	},
-	"trisha_75.png": {
+	{
+		"filename": "trisha-optim_56.png",
 		"frame": {"x":0, "y":0, "w":120, "h":54},
 		"spriteSourceSize": {"x":0,"y":0,"w":120,"h":54},
 		"sourceSize": {"w":120,"h":54}
 	},
-	"trisha_76.png": {
-		"frame": {"x":88, "y":415, "w":79, "h":52},
+	{
+		"filename": "trisha-optim_57.png",
+		"frame": {"x":0, "y":498, "w":79, "h":52},
 		"spriteSourceSize": {"x":0,"y":0,"w":79,"h":52},
 		"sourceSize": {"w":79,"h":52}
 	},
-	"trisha_78.png": {
-		"frame": {"x":97, "y":327, "w":79, "h":52},
+	{
+		"filename": "trisha-optim_58.png",
+		"frame": {"x":70, "y":732, "w":28, "h":4},
+		"spriteSourceSize": {"x":0,"y":0,"w":28,"h":4},
+		"sourceSize": {"w":28,"h":4}
+	},
+	{
+		"filename": "trisha-optim_59.png",
+		"frame": {"x":0, "y":551, "w":79, "h":52},
 		"spriteSourceSize": {"x":0,"y":0,"w":79,"h":52},
 		"sourceSize": {"w":79,"h":52}
 	},
-	"trisha_79.png": {
-		"frame": {"x":299, "y":521, "w":52, "h":67},
-		"spriteSourceSize": {"x":0,"y":0,"w":52,"h":67},
-		"sourceSize": {"w":52,"h":67}
+	{
+		"filename": "trisha-optim_60.png",
+		"frame": {"x":104, "y":55, "w":61, "h":95},
+		"spriteSourceSize": {"x":0,"y":0,"w":61,"h":95},
+		"sourceSize": {"w":61,"h":95}
 	},
-	"trisha_80.png": {
-		"frame": {"x":354, "y":76, "w":50, "h":80},
-		"spriteSourceSize": {"x":0,"y":0,"w":50,"h":80},
-		"sourceSize": {"w":50,"h":80}
+	{
+		"filename": "trisha-optim_61.png",
+		"frame": {"x":206, "y":397, "w":7, "h":7},
+		"spriteSourceSize": {"x":0,"y":0,"w":7,"h":7},
+		"sourceSize": {"w":7,"h":7}
 	},
-	"trisha_81.png": {
-		"frame": {"x":87, "y":487, "w":80, "h":47},
-		"spriteSourceSize": {"x":0,"y":0,"w":80,"h":47},
-		"sourceSize": {"w":80,"h":47}
+	{
+		"filename": "trisha-optim_62.png",
+		"frame": {"x":57, "y":967, "w":5, "h":6},
+		"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+		"sourceSize": {"w":5,"h":6}
 	},
-	"trisha_82.png": {
-		"frame": {"x":0, "y":557, "w":73, "h":42},
-		"spriteSourceSize": {"x":0,"y":0,"w":73,"h":42},
-		"sourceSize": {"w":73,"h":42}
+	{
+		"filename": "trisha-optim_63.png",
+		"frame": {"x":276, "y":538, "w":35, "h":99},
+		"spriteSourceSize": {"x":0,"y":0,"w":35,"h":99},
+		"sourceSize": {"w":35,"h":99}
 	},
-	"trisha_83.png": {
-		"frame": {"x":354, "y":157, "w":49, "h":78},
-		"spriteSourceSize": {"x":0,"y":0,"w":49,"h":78},
-		"sourceSize": {"w":49,"h":78}
+	{
+		"filename": "trisha-optim_64.png",
+		"frame": {"x":57, "y":967, "w":5, "h":6},
+		"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+		"sourceSize": {"w":5,"h":6}
 	},
-	"trisha_84.png": {
-		"frame": {"x":404, "y":317, "w":45, "h":83},
-		"spriteSourceSize": {"x":0,"y":0,"w":45,"h":83},
-		"sourceSize": {"w":45,"h":83}
+	{
+		"filename": "trisha-optim_65.png",
+		"frame": {"x":57, "y":967, "w":5, "h":6},
+		"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+		"sourceSize": {"w":5,"h":6}
 	},
-	"trisha_85.png": {
-		"frame": {"x":182, "y":119, "w":63, "h":74},
+	{
+		"filename": "trisha-optim_66.png",
+		"frame": {"x":234, "y":767, "w":40, "h":91},
+		"spriteSourceSize": {"x":0,"y":0,"w":40,"h":91},
+		"sourceSize": {"w":40,"h":91}
+	},
+	{
+		"filename": "trisha-optim_67.png",
+		"frame": {"x":188, "y":767, "w":45, "h":93},
+		"spriteSourceSize": {"x":0,"y":0,"w":45,"h":93},
+		"sourceSize": {"w":45,"h":93}
+	},
+	{
+		"filename": "trisha-optim_68.png",
+		"frame": {"x":57, "y":967, "w":5, "h":6},
+		"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+		"sourceSize": {"w":5,"h":6}
+	},
+	{
+		"filename": "trisha-optim_69.png",
+		"frame": {"x":0, "y":815, "w":68, "h":82},
+		"spriteSourceSize": {"x":0,"y":0,"w":68,"h":82},
+		"sourceSize": {"w":68,"h":82}
+	},
+	{
+		"filename": "trisha-optim_70.png",
+		"frame": {"x":276, "y":857, "w":36, "h":87},
+		"spriteSourceSize": {"x":0,"y":0,"w":36,"h":87},
+		"sourceSize": {"w":36,"h":87}
+	},
+	{
+		"filename": "trisha-optim_71.png",
+		"frame": {"x":87, "y":405, "w":63, "h":74},
 		"spriteSourceSize": {"x":0,"y":0,"w":63,"h":74},
 		"sourceSize": {"w":63,"h":74}
 	},
-	"trisha_86.png": {
-		"frame": {"x":299, "y":436, "w":55, "h":84},
-		"spriteSourceSize": {"x":0,"y":0,"w":55,"h":84},
-		"sourceSize": {"w":55,"h":84}
+	{
+		"filename": "trisha-optim_72.png",
+		"frame": {"x":206, "y":275, "w":41, "h":73},
+		"spriteSourceSize": {"x":0,"y":0,"w":41,"h":73},
+		"sourceSize": {"w":41,"h":73}
 	},
-	"trisha_87.png": {
-		"frame": {"x":451, "y":465, "w":35, "h":61},
-		"spriteSourceSize": {"x":0,"y":0,"w":35,"h":61},
-		"sourceSize": {"w":35,"h":61}
+	{
+		"filename": "trisha-optim_73.png",
+		"frame": {"x":0, "y":257, "w":87, "h":75},
+		"spriteSourceSize": {"x":0,"y":0,"w":87,"h":75},
+		"sourceSize": {"w":87,"h":75}
 	},
-	"trisha_88.png": {
-		"frame": {"x":492, "y":157, "w":35, "h":62},
-		"spriteSourceSize": {"x":0,"y":0,"w":35,"h":62},
-		"sourceSize": {"w":35,"h":62}
+	{
+		"filename": "trisha-optim_74.png",
+		"frame": {"x":150, "y":326, "w":55, "h":78},
+		"spriteSourceSize": {"x":0,"y":0,"w":55,"h":78},
+		"sourceSize": {"w":55,"h":78}
 	},
-	"trisha_89.png": {
-		"frame": {"x":531, "y":223, "w":32, "h":73},
-		"spriteSourceSize": {"x":0,"y":0,"w":32,"h":73},
-		"sourceSize": {"w":32,"h":73}
+	{
+		"filename": "trisha-optim_75.png",
+		"frame": {"x":104, "y":151, "w":56, "h":67},
+		"spriteSourceSize": {"x":0,"y":0,"w":56,"h":67},
+		"sourceSize": {"w":56,"h":67}
 	},
-	"trisha_90.png": {
-		"frame": {"x":354, "y":312, "w":49, "h":78},
-		"spriteSourceSize": {"x":0,"y":0,"w":49,"h":78},
-		"sourceSize": {"w":49,"h":78}
+	{
+		"filename": "trisha-optim_76.png",
+		"frame": {"x":137, "y":568, "w":50, "h":63},
+		"spriteSourceSize": {"x":0,"y":0,"w":50,"h":63},
+		"sourceSize": {"w":50,"h":63}
 	},
-	"trisha_91.png": {
-		"frame": {"x":0, "y":55, "w":106, "h":69},
-		"spriteSourceSize": {"x":0,"y":0,"w":106,"h":69},
-		"sourceSize": {"w":106,"h":69}
+	{
+		"filename": "trisha-optim_77.png",
+		"frame": {"x":200, "y":405, "w":43, "h":54},
+		"spriteSourceSize": {"x":0,"y":0,"w":43,"h":54},
+		"sourceSize": {"w":43,"h":54}
 	},
-	"trisha_92.png": {
-		"frame": {"x":0, "y":557, "w":73, "h":42},
-		"spriteSourceSize": {"x":0,"y":0,"w":73,"h":42},
-		"sourceSize": {"w":73,"h":42}
+	{
+		"filename": "trisha-optim_78.png",
+		"frame": {"x":0, "y":967, "w":56, "h":56},
+		"spriteSourceSize": {"x":0,"y":0,"w":56,"h":56},
+		"sourceSize": {"w":56,"h":56}
 	},
-	"trisha_93.png": {
-		"frame": {"x":87, "y":487, "w":80, "h":47},
-		"spriteSourceSize": {"x":0,"y":0,"w":80,"h":47},
-		"sourceSize": {"w":80,"h":47}
+	{
+		"filename": "trisha-optim_79.png",
+		"frame": {"x":206, "y":397, "w":7, "h":7},
+		"spriteSourceSize": {"x":0,"y":0,"w":7,"h":7},
+		"sourceSize": {"w":7,"h":7}
 	},
-	"trisha_94.png": {
-		"frame": {"x":246, "y":48, "w":57, "h":89},
-		"spriteSourceSize": {"x":0,"y":0,"w":57,"h":89},
-		"sourceSize": {"w":57,"h":89}
+	{
+		"filename": "trisha-optim_80.png",
+		"frame": {"x":57, "y":967, "w":5, "h":6},
+		"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+		"sourceSize": {"w":5,"h":6}
 	},
-	"trisha_95.png": {
-		"frame": {"x":104, "y":125, "w":77, "h":54},
-		"spriteSourceSize": {"x":0,"y":0,"w":77,"h":54},
-		"sourceSize": {"w":77,"h":54}
+	{
+		"filename": "trisha-optim_81.png",
+		"frame": {"x":57, "y":967, "w":5, "h":6},
+		"spriteSourceSize": {"x":0,"y":0,"w":5,"h":6},
+		"sourceSize": {"w":5,"h":6}
 	},
-	"trisha_96.png": {
-		"frame": {"x":448, "y":528, "w":44, "h":71},
-		"spriteSourceSize": {"x":0,"y":0,"w":44,"h":71},
-		"sourceSize": {"w":44,"h":71}
+	{
+		"filename": "trisha-optim_82.png",
+		"frame": {"x":173, "y":46, "w":5, "h":5},
+		"spriteSourceSize": {"x":0,"y":0,"w":5,"h":5},
+		"sourceSize": {"w":5,"h":5}
 	},
-	"trisha_97.png": {
-		"frame": {"x":0, "y":371, "w":95, "h":43},
-		"spriteSourceSize": {"x":0,"y":0,"w":95,"h":43},
-		"sourceSize": {"w":95,"h":43}
+	{
+		"filename": "trisha-optim_83.png",
+		"frame": {"x":88, "y":257, "w":62, "h":68},
+		"spriteSourceSize": {"x":0,"y":0,"w":62,"h":68},
+		"sourceSize": {"w":62,"h":68}
 	},
-	"trisha_98.png": {
-		"frame": {"x":0, "y":327, "w":96, "h":43},
-		"spriteSourceSize": {"x":0,"y":0,"w":96,"h":43},
-		"sourceSize": {"w":96,"h":43}
+	{
+		"filename": "trisha-optim_84.png",
+		"frame": {"x":72, "y":604, "w":64, "h":68},
+		"spriteSourceSize": {"x":0,"y":0,"w":64,"h":68},
+		"sourceSize": {"w":64,"h":68}
 	},
-	"trisha_99.png": {
-		"frame": {"x":237, "y":457, "w":61, "h":95},
-		"spriteSourceSize": {"x":0,"y":0,"w":61,"h":95},
-		"sourceSize": {"w":61,"h":95}
+	{
+		"filename": "trisha-optim_85.png",
+		"frame": {"x":80, "y":498, "w":63, "h":69},
+		"spriteSourceSize": {"x":0,"y":0,"w":63,"h":69},
+		"sourceSize": {"w":63,"h":69}
+	},
+	{
+		"filename": "trisha-optim_86.png",
+		"frame": {"x":188, "y":556, "w":47, "h":67},
+		"spriteSourceSize": {"x":0,"y":0,"w":47,"h":67},
+		"sourceSize": {"w":47,"h":67}
+	},
+	{
+		"filename": "trisha-optim_87.png",
+		"frame": {"x":69, "y":875, "w":65, "h":74},
+		"spriteSourceSize": {"x":0,"y":0,"w":65,"h":74},
+		"sourceSize": {"w":65,"h":74}
+	},
+	{
+		"filename": "trisha-optim_88.png",
+		"frame": {"x":311, "y":353, "w":26, "h":88},
+		"spriteSourceSize": {"x":0,"y":0,"w":26,"h":88},
+		"sourceSize": {"w":26,"h":88}
+	},
+	{
+		"filename": "trisha-optim_89.png",
+		"frame": {"x":201, "y":208, "w":43, "h":66},
+		"spriteSourceSize": {"x":0,"y":0,"w":43,"h":66},
+		"sourceSize": {"w":43,"h":66}
+	},
+	{
+		"filename": "trisha-optim_90.png",
+		"frame": {"x":72, "y":673, "w":63, "h":58},
+		"spriteSourceSize": {"x":0,"y":0,"w":63,"h":58},
+		"sourceSize": {"w":63,"h":58}
+	},
+	{
+		"filename": "trisha-optim_91.png",
+		"frame": {"x":0, "y":475, "w":85, "h":22},
+		"spriteSourceSize": {"x":0,"y":0,"w":85,"h":22},
+		"sourceSize": {"w":85,"h":22}
+	},
+	{
+		"filename": "trisha-optim_92.png",
+		"frame": {"x":0, "y":665, "w":71, "h":34},
+		"spriteSourceSize": {"x":0,"y":0,"w":71,"h":34},
+		"sourceSize": {"w":71,"h":34}
+	},
+	{
+		"filename": "trisha-optim_93.png",
+		"frame": {"x":173, "y":0, "w":32, "h":45},
+		"spriteSourceSize": {"x":0,"y":0,"w":32,"h":45},
+		"sourceSize": {"w":32,"h":45}
 	}
 
-},
+],
 "meta": {
 	"image": "sprites.png",
-	"size": {"w": 593, "h": 600},
+	"size": {"w": 512, "h": 1024},
 	"scale": "1"
 }
 }

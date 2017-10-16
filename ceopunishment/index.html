@@ -4,6 +4,8 @@
 	<meta charset="UTF-8" />
 	<title>CEOPunishment, October 2017</title>
     <script src="//cdn.jsdelivr.net/phaser/2.6.2/phaser.min.js"></script>
+    <script src="ga_player.js"></script>
+    <script src="ga_trisha.js"></script>
 
     <style type="text/css">
         body {
@@ -15,6 +17,13 @@
 <body>
 
 <script type="text/javascript">
+
+function checkOverlap(spriteA, spriteB) {
+    var boundsA = spriteA.getBounds();
+    var boundsB = spriteB.getBounds();
+
+    return Phaser.Rectangle.intersects(boundsA, boundsB);
+}
 
 const MUSIC_ON = false;
 const START_WITH = 'go';
@@ -100,45 +109,25 @@ BootState.prototype = {
         this.objs['module'].buffer = game.cache.getBinary(this.objs['mod']);
         this.objs['module'].parse();
 
-        // list of actors
+        // init list of actors as array
         this.objs['actors'] = [];
 
         // background:
         sprite = game.add.sprite(0, 0, 'city1');
         this.objs['city1'] = sprite;
 
-        // main character
-        sprite = game.add.sprite(40, 530, 'bitch');
-        sprite.animations.add('walk', Phaser.ArrayUtils.numberArray(0,3), 10, false);
-        sprite.animations.add('whip', Phaser.ArrayUtils.numberArray(11,19), 10, false);
-        sprite.anchor.x = 0.5;
-        sprite.anchor.y = 1.0;
-        sprite.scale.x = 1.5;
-        sprite.scale.y = 1.5;
-        sprite.filters = null;//[this.filter];
-        sprite.name = 'player';
-        sprite.type = 'actor';
-        // this.objs['bitch'] = sprite;
-        game.physics.enable(sprite, Phaser.Physics.ARCADE);
-        this.objs['actors'][sprite.name] = sprite;
+        // Set up game actors
+        var ga = new Player(this, "player");
+        ga.init(40, 530);
+        this.objs['actors'][ga.name] = ga;
 
-        // trisha character
-        sprite = game.add.sprite(800, 580, 'trisha'); 
-        sprite.animations.add('dance', Phaser.ArrayUtils.numberArray(0, 8), 10, true);
-        sprite.animations.play('dance');
-        sprite.anchor.x = 0;
-        sprite.anchor.y = 1.0;
-        sprite.scale.x = 1.5;
-        sprite.scale.y = 1.5;
-        sprite.name = 'trisha';
-        sprite.type = 'actor';
-        // this.objs['trisha'] = sprite;
-        game.physics.enable(sprite, Phaser.Physics.ARCADE);
-        this.objs['actors'][sprite.name] = sprite;
+        ga = new Trisha(this, "trisha");
+        ga.init(800, 580);
+        this.objs['actors'][ga.name] = ga;
 
         // Make the default camera follow the ufo.
         game.world.setBounds(0,0,this.objs['city1'].width, this.objs['city1'].height);
-        game.camera.follow(this.getActor('player'));
+        game.camera.follow(this.getActor('player').sprite);
 
         var rect = game.add.graphics(0, 0);
         rect.beginFill(0x000000);
@@ -187,102 +176,41 @@ BootState.prototype = {
         this.objs['rain2'].x = this.objs['rain1'].x + this.objs['rain1'].width;
     },
 
-    collisionHandler:function (obj1, obj2) {
-        game.stage.backgroundColor = '#992d2d';
-        console.log('HIT');
-    },
+    // checkHitCollision: function() {
+    //     var actors = this.objs['actors'];
 
-    checkHitCollision: function() {
-        var actors = this.objs['actors'];
+    //     for (var key in actors){
+    //         var a = actors[key];
+    //         if (a.name == "player")
+    //             continue;
+    //         console.log('x:' + a.x + " y:" + a.y);
+    //         console.log('w:' + a.width + " h:" + a.height);            
+    //     }
 
-        for (var key in actors){
-            var a = actors[key];
-            if (a.name == "player")
-                continue;
-            console.log('x:' + a.x + " y:" + a.y);
-            console.log('w:' + a.width + " h:" + a.height);            
-        }
-
-        // doesn't work with dictionaries, only arrays
-        // for (i=0; i<actors.length; i++) {
-        //     var a = actors[i];
-        //     console.log('x:' + a.x + " y:" + a.y);
-        //     console.log('w:' + a.width + " h:" + a.height);
-        // }
-    },
+    //     // doesn't work with dictionaries, only arrays
+    //     // for (i=0; i<actors.length; i++) {
+    //     //     var a = actors[i];
+    //     //     console.log('x:' + a.x + " y:" + a.y);
+    //     //     console.log('w:' + a.width + " h:" + a.height);
+    //     // }
+    // },
 
     getActor: function(name) {
         return this.objs['actors'][name];
+    },
+
+    isActorOverlapped: function(ga){
+        var player = this.getActor('player');
+        return checkOverlap(player.sprite, ga.sprite);
     },
 
     update: function() {
         // Hack for passing the context of this to timeout fn
         var that = this;
         if (this.quest == 'go') {
-        
-            var flags = 0;
-            if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
-                flags |= 1;
-            if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
-                flags |= 1 << 1;
-            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
-                flags |= 1 << 2;
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
-                flags |= 1 << 3;
 
-            if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-                if (this.anim && this.anim.name != 'whip') {
-                    this.getActor('player').animations.stop();
-                    this.anim = this.getActor('player').animations.play('whip');
-                    this.getActor('player').filters = [this.filter];
-                }
-            }
+            this.getActor('player').update();
 
-            if (this.anim && this.anim.name == 'whip') {
-                if (!this.anim.isFinished) {
-                    flags = 0;
-                    this.checkHitCollision();
-                }
-                else {
-                    this.anim = this.getActor('player').animations.play('walk');
-                    this.anim.stop();
-                    this.getActor('player').filters = null;
-                }
-            } else if (this.anim && this.anim.name == 'walk') {
-                if (this.anim.isFinished)
-                    this.anim.stop();
-            }
-
-            if (flags & 1) {
-                if (this.getActor('player').animations.getAnimation('walk').isPlaying == false)
-                            this.anim = this.getActor('player').animations.play('walk');
-
-                this.getActor('player').x -= speed;
-                if (this.getActor('player').scale.x == 1.5)
-                    this.getActor('player').scale.x = -1.5
-            } 
-            if (flags & (1 << 1)) {
-                if (this.getActor('player').animations.getAnimation('walk').isPlaying == false)
-                            this.anim = this.getActor('player').animations.play('walk');
-                this.getActor('player').x += speed;
-                if (this.getActor('player').scale.x == -1.5)
-                    this.getActor('player').scale.x = 1.5
-            }
-            if (flags & (1 << 2)) {
-                this.getActor('player').animations.play('walk');
-                this.getActor('player').y += speed;
-            }
-            if (flags & (1 << 3)) {
-                this.anim = this.getActor('player').animations.play('walk');
-                this.getActor('player').y -= speed;
-            } 
-
-            if (this.getActor('player').x < 0) 
-                this.getActor('player').x = 0;
-            if (this.getActor('player').x > this.objs['city1'].width - 40) 
-                this.getActor('player').x = this.objs['city1'].width - 40;
-            if (this.getActor('player').y < 530) this.getActor('player').y = 530;
-            if (this.getActor('player').y > 600) this.getActor('player').y = 600;
         }
     },
 
