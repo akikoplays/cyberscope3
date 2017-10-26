@@ -43,6 +43,9 @@ Player.prototype = {
                     //this.sprite.filters = [this.filter];
                 }
             }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.E)) {
+                this.parent.goTerminal();
+            }
 
             if (this.anim.name == 'whip') {
                 if (!this.anim.isFinished) {

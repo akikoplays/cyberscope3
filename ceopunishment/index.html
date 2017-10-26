@@ -79,12 +79,7 @@ BootState.prototype = {
         game.load.image('171', 'assets/171.png');
         game.load.image('city1', 'assets/ingame-city1.gif');
         game.load.image('rain', 'assets/rain.png');
-
-        //  37x45 is the size of each frame
-        //  There are 18 frames in the PNG - you can leave this value blank if the frames fill up the entire PNG, but in this case there are some
-        //  blank frames at the end, so we tell the loader how many to load
-        // game.load.spritesheet('bitch-walk', 'assets/bitch/sor3-bitch.png', 46, 90, 4);
-        // game.load.spritesheet('trisha-dance', 'assets/trisha/trisha-dance.png', 57, 103, 9);
+        game.load.image('terminal', 'assets/terminal.png');
 
         game.load.atlas('bitch', 'assets/bitch/sprites.png', 'assets/bitch/sprites.js', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
         game.load.atlas('trisha', 'assets/trisha/sprites.png', 'assets/trisha/sprites.js', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
@@ -189,11 +184,33 @@ BootState.prototype = {
         // Hack for passing the context of this to timeout fn
         var that = this;
         if (this.quest == 'go') {
-
             this.getActor('player').update();
+        } else if (this.quest == 'terminal') {
+            if (game.input.keyboard.isDown(Phaser.Keyboard.E)) {
+                var sprite = this.objs['terminal'];
+                sprite.kill();
+                this.objs['terminal'] = null;
+                this.quest = 'busy';
+                var that = this;
+                game.time.events.add(500, function() {
+                        that.quest = 'go';
+                    })        
 
+            }
         }
     },
+
+    goTerminal: function() {
+        var sprite = game.add.sprite(0, 0, 'terminal');
+        this.objs['terminal'] = sprite;
+        sprite.x = game.width/2 - sprite.width/2;
+        sprite.y = game.height/2 - sprite.height/2;
+        this.quest = 'busy';
+        var that = this;
+        game.time.events.add(500, function() {
+            that.quest = 'terminal';
+        });
+    }
 
 };
 
