@@ -7,3 +7,7 @@ https://jsfiddle.net/BinaryMoon/a68Qp/
 
 Sprite tools:
 * configuration for Shoebox support for Phaser tex atlas: https://github.com/netcell/PhaserShoeBoxConfig
+
+Sublime tips:
+To convert new lines to \n i used regex box, and wrote find: (\n) replace \n.
+To remove single \n characters and keep \n\n i used this regex: (^|[^\\n])\\n(?!\\n)
