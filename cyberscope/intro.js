@@ -79,7 +79,7 @@ IntroState.prototype = {
         space = TEXT_BLOCK_SPACE;
         size = 16;
 
-        that.objs['gfx'] = game.add.image(game.width + RIGHT_BLOCK_X, TEXT_Y /*- 30*/, gfx);
+        that.objs['gfx'] = game.add.image(game.width + RIGHT_BLOCK_X, TEXT_Y, gfx);
         that.objs['titleSprite'] = game.add.image(LEFT_BLOCK_X, TITLE_Y, that.objs['titleFont']);
         that.objs['titleFont'].text = title;
         that.objs['titleSprite'].x = -that.objs['titleSprite'].width;
@@ -120,8 +120,8 @@ IntroState.prototype = {
                 that.bmpBlockLeft.text = text.substring(begin, char);
                 var picoffset = 0;
                 if (blockid & 1)
-                    picoffset = that.objs['gfx'].height;
-                if (that.bmpBlockLeft.textHeight < /*368+16*2*/ TEXT_BLOCK_MAX_HEIGHT - picoffset) {
+                    picoffset = that.objs['gfx'].height + 16;
+                if (that.bmpBlockLeft.textHeight < TEXT_BLOCK_MAX_HEIGHT - picoffset) {
                     lastwordbegin = char;
                     if (eot)
                         that.objs['blocks'][blockid++] = text.substring(begin, totalCharsProcessed);
