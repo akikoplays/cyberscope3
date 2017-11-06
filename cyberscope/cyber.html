@@ -18,7 +18,10 @@
 <script type="text/javascript">
 
 const MUSIC_ON = false;
-const START_WITH = 'go';//'switchtokick'; // 'go'
+// 'switchtokick'; fadeout to kickstart amiga screen
+// 'go' main entrypoint
+// 'gotoc' switch to TOC
+const START_WITH = 'go';
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
 /* ======================== BootState ==============================*/
@@ -191,6 +194,9 @@ BootState.prototype = {
                 });
                 
             });
+            that.quest = 'holdcity';
+        } else if (this.quest == 'gotoc') {
+            game.state.start('Intro');
             that.quest = 'holdcity';
         }
     },
