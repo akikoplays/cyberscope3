@@ -26,20 +26,6 @@ IntroState.prototype = {
     },
 
     preload: function() {
-
-        // game.load.image('titlescreen', 'assets/cyberscope.jpeg');
-        // game.load.image('midlight', 'assets/midlight-express.gif');
-        // game.load.image('kickstart', 'assets/kickstart30.gif');
-        // game.load.image('floppy', 'assets/floppy.png');
-        // game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
-        // game.load.script('protracker', 'protracker.js');
-        // game.load.binary('mod', 'assets/intermediate.mod', this.modLoaded, this);
-        // game.load.json('contents', 'assets/contents.json');
-        // game.load.image('171', 'assets/171.png');
-        // game.load.image('imgHeader', 'assets/header.png');
-        // game.load.image('imgFooter', 'assets/footer.png');
-        // game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
-
         // parse articles
         json = game.cache.getJSON('contents');
         console.log("contents json loaded: " + json);
@@ -52,7 +38,6 @@ IntroState.prototype = {
             game.load.image(gfx, 'assets/' + gfx);
             console.log('loading: ' + 'assets/' + gfx);
         }
-
     },
 
     fadein: function(onCompleteFn) {

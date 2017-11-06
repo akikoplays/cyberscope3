@@ -11,3 +11,6 @@ Sprite tools:
 Sublime tips:
 To convert new lines to \n i used regex box, and wrote find: (\n) replace \n.
 To remove single \n characters and keep \n\n i used this regex: (^|[^\\n])\\n(?!\\n)
+
+GitHub pages for this project:
+https://akikoplays.github.io/cyberscope3/cyberscope/cyber.html
