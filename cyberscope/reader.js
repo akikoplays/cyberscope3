@@ -1,8 +1,7 @@
-/* ======================== BootState ==============================*/
-/*  loads starting screen, shows some blitter image fx and gives control
-    to the content table of contents */
+/* ======================== ReaderState ==============================*/
+/*  Presents table of contents, and handles article rendering */
 
-var IntroState = function (game){
+var ReaderState = function (game){
     this.bmpTitle = null;
     this.bmpBlockLeft = null;
     this.bmpBlockRight = null;
@@ -18,8 +17,9 @@ const TEXT_BLOCK_WIDTH = 350;
 const TEXT_BLOCK_MAX_HEIGHT = 400;
 const LEFT_BLOCK_X = TEXT_X;
 const RIGHT_BLOCK_X = TEXT_X + TEXT_BLOCK_WIDTH + TEXT_BLOCK_SPACE;
+const FONT_SIZE = 16;
 
-IntroState.prototype = {
+ReaderState.prototype = {
 
     init: function() {
 
@@ -68,6 +68,8 @@ IntroState.prototype = {
         that = this;
         json = game.cache.getJSON('contents');
 
+        that.objs['Articles'] = game.add.group();
+
         title = json.articles[1].title;
         text = json.articles[1].body; // left text
         text2 = json.articles[0].body2; // right text 
@@ -95,28 +97,55 @@ IntroState.prototype = {
     showTOC: function() {
         that = this;
         json = game.cache.getJSON('contents');
-        var size = 16;
+        var size = FONT_SIZE;
+
         for (i = 0; i < json.articles.length; i++) {
             var article = json.articles[i];
             console.log("article #" + i + ": " + article.title);
-            var sprite = game.add.sprite(0, 0, "icon");
-            sprite.width = 32;
-            sprite.height = 32;
-            sprite.x = TEXT_X;
-            sprite.y = TEXT_Y + i*(sprite.height * 1.4);
-            var text = game.add.bitmapText(TEXT_X + sprite.width + 10, sprite.y + sprite.height/2 - size/2, 'gem', article.title, size);
+
+            var button = game.add.button(0, 0, 
+                'icon', this.actionOnClick, this, 0, 0, 0);
+            button.width = 32;
+            button.height = 32;
+            button.x = TEXT_X;
+            button.y = TEXT_Y + i*(button.height * 1.4);
+            button.article = article;
+            that.objs['Articles'].add(button);
+
+            var text = game.add.bitmapText(TEXT_X + button.width + 10, button.y + button.height/2 - size/2, 'gem', article.title, size);
             text.tint = 0xffbb66;
+            that.objs['Articles'].add(text);
         }
+
+        that.objs['Articles'].alpha = 0.0;
+        game.add.tween(that.objs['Articles']).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);        
     },
 
-    showArticle: function() {
+    actionOnClick: function(e) {
+        console.log(e.article.title);
+        var tween = game.add.tween(that.objs['Articles']).to({alpha:0.0},1000,Phaser.Easing.Cubic.Out,true);
         that = this;
-        json = game.cache.getJSON('contents');
-        console.log(json);
-        title = json.articles[1].title;
-        text = json.articles[1].body; // left text
-        text2 = json.articles[0].body2; // right text 
-        gfx = json.articles[1].gfx;
+        tween.onComplete.add(function(){
+            console.log("Show article");
+            that.showArticle(e.article);
+        });
+
+        // evict all TOC elements from memory
+        game.time.events.add(1200, function() {
+            that.objs['Articles'].forEach(function(item) {
+                item.kill();
+            });
+            that.objs['Articles'].removeAll();
+        }
+        );
+
+    },
+
+    showArticle: function(article) {
+        that = this;
+        title = article.title;
+        text = article.body; // left text
+        gfx = article.gfx;
 
         y = TEXT_Y;
         x = TEXT_X;
@@ -177,7 +206,7 @@ IntroState.prototype = {
                 }
 
                 if (eot) {
-                    that.objs['pagesnum'] = Math.round(blockid/2);
+                    that.objs['pagesnum'] = Math.floor(blockid/2);
                     that.objs['curpage'] = 0;
                     that.objs['numblocks'] = blockid;
                     break;
@@ -190,29 +219,20 @@ IntroState.prototype = {
         that.bmpBlockRight = game.add.bitmapText(game.width + RIGHT_BLOCK_X, y + that.objs['gfx'].height + 3, 'gem', "loading", size);
         that.bmpBlockRight.tint = 0xeeddff;
         that.bmpBlockRight.maxWidth = width;
-        that.bmpBlockRight.text = that.objs['blocks'][1];//text2;
-        for (i=0; i<blockid; i++) {
-            console.log("=============================");
-            console.log("BLOCK ID " + i);
-            console.log("=============================");
-            console.log(that.objs['blocks'][i]);
-            console.log("\n\n");
-        }
+        that.bmpBlockRight.text = that.objs['numblocks']>1 ? that.objs['blocks'][1] : ""
+        // for (i=0; i<blockid; i++) {
+        //     console.log("=============================");
+        //     console.log("BLOCK ID " + i);
+        //     console.log("=============================");
+        //     console.log(that.objs['blocks'][i]);
+        //     console.log("\n\n");
+        // }
 
+        console.log("Launching tweens");
         game.add.tween(that.objs['titleSprite']).to({x:LEFT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
         game.add.tween(that.bmpBlockLeft).to({x:LEFT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
         game.add.tween(that.bmpBlockRight).to({x:RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
         game.add.tween(that.objs['gfx']).to({x:RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
-
-        // add header and footer images
-        that.objs['header'] = game.make.bitmapData();
-        that.objs['header'].load('imgHeader');
-        that.objs['footer'] = game.make.bitmapData();
-        that.objs['footer'].load('imgFooter');
-        that.objs['sHeader'] = game.add.sprite(0, -that.objs['footer'].height, that.objs['header']);
-        that.objs['sFooter'] = game.add.sprite(0, game.height+that.objs['footer'].height, that.objs['footer']);
-        game.add.tween(that.objs['sFooter']).to({y:game.height - that.objs['footer'].height},1000,Phaser.Easing.Cubic.Out,true);
-        game.add.tween(that.objs['sHeader']).to({y:0},1000,Phaser.Easing.Cubic.Out,true);
 
         // assign listeners for mouse interactions
         game.input.onDown.add(this.onClick, this);
@@ -268,12 +288,30 @@ IntroState.prototype = {
                     var lp = curpage*2;
                     var rp = lp+1;
                     that.bmpBlockLeft.text = that.objs['blocks'][lp];
-                    if (rp < numblocks)
-                        that.bmpBlockRight.text = that.objs['blocks'][rp];
-                    else
-                        that.bmpBlockRight.text = "";
+                    that.bmpBlockRight.text = that.objs['blocks'][rp];
                     that.objs['curpage'] = curpage;
                 }
+            } else if (game.input.y > 0 && game.input.y < CINEMASCOPE) {
+                console.log("Pressed TOC");
+
+                console.log("Launching tweens");
+                game.add.tween(that.objs['titleSprite']).to({x:-that.objs['titleSprite'].width},1000,Phaser.Easing.Cubic.Out,true);
+                game.add.tween(that.bmpBlockLeft).to({x:game.width},1000,Phaser.Easing.Cubic.Out,true);
+                game.add.tween(that.bmpBlockRight).to({x:game.width},1000,Phaser.Easing.Cubic.Out,true);
+                var tween = game.add.tween(that.objs['gfx']).to({x:game.width + RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
+
+                tween.onComplete.add(function(){
+                    that.showTOC();
+                });
+
+                // evict all page elements from memory
+                game.time.events.add(1200, function() {
+                    that.bmpBlockRight.kill();
+                    that.bmpBlockLeft.kill();
+                    that.objs['titleSprite'].kill();
+                    that.objs['gfx'].kill();                    
+                }
+                );
             }
         }
     },
