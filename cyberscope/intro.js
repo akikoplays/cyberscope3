@@ -59,12 +59,57 @@ IntroState.prototype = {
             // game.time.events.add(2000, onCompleteFn, 0, that);
             game.time.events.add(2000, function() {
                 that.objs["tween"] = game.add.tween(that.objs['midlight']).to({alpha:0.33},1000,Phaser.Easing.None,true);
-                that.showTOC();
+                that.prepareScreen();
             });
         });
     },
 
+    prepareScreen: function() {
+        that = this;
+        json = game.cache.getJSON('contents');
+
+        title = json.articles[1].title;
+        text = json.articles[1].body; // left text
+        text2 = json.articles[0].body2; // right text 
+        gfx = json.articles[1].gfx;
+
+        // add header and footer images
+        that.objs['header'] = game.make.bitmapData();
+        that.objs['header'].load('imgHeader');
+        that.objs['footer'] = game.make.bitmapData();
+        that.objs['footer'].load('imgFooter');
+        that.objs['sHeader'] = game.add.sprite(0, -that.objs['footer'].height, that.objs['header']);
+        that.objs['sFooter'] = game.add.sprite(0, game.height+that.objs['footer'].height, that.objs['footer']);
+        game.add.tween(that.objs['sFooter']).to({y:game.height - that.objs['footer'].height},1000,Phaser.Easing.Cubic.Out,true);
+        game.add.tween(that.objs['sHeader']).to({y:0},1000,Phaser.Easing.Cubic.Out,true);
+
+        // assign listeners for mouse interactions
+        //game.input.onDown.add(this.onClick, this);
+
+        game.time.events.add(2000, function() {
+            that.showTOC();
+        });
+
+    },
+
     showTOC: function() {
+        that = this;
+        json = game.cache.getJSON('contents');
+        var size = 16;
+        for (i = 0; i < json.articles.length; i++) {
+            var article = json.articles[i];
+            console.log("article #" + i + ": " + article.title);
+            var sprite = game.add.sprite(0, 0, "icon");
+            sprite.width = 32;
+            sprite.height = 32;
+            sprite.x = TEXT_X;
+            sprite.y = TEXT_Y + i*(sprite.height * 1.4);
+            var text = game.add.bitmapText(TEXT_X + sprite.width + 10, sprite.y + sprite.height/2 - size/2, 'gem', article.title, size);
+            text.tint = 0xffbb66;
+        }
+    },
+
+    showArticle: function() {
         that = this;
         json = game.cache.getJSON('contents');
         console.log(json);
