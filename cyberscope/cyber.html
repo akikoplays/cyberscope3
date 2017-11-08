@@ -75,7 +75,7 @@ BootState.prototype = {
         game.load.spritesheet('icon', 'assets/icon.png', 56, 62, 1);
         game.load.audio('floppy', 'assets/floppy.mp3');
         game.load.audio('floppyread', 'assets/floppyread.mp3');
-
+        game.load.audio('onward', 'assets/onward.mp3');
     },
 
     create: function() {
@@ -104,6 +104,7 @@ BootState.prototype = {
         this.objs.floppysnd = game.add.audio('floppy');
         this.objs.floppyreadsnd = game.add.audio('floppyread');
         this.objs.floppyreadsnd.volume = 0.5;
+        this.objs.music = game.add.audio('onward');
         // game.sound.setDecodedCallback(sounds, start, this);
     },
 
@@ -203,6 +204,7 @@ BootState.prototype = {
                     // after 2 seconds, show reader
                     game.time.events.add(2000, function() {
                         game.state.start('Reader');
+                        that.objs.music.loopFull();
                     })
                 });
                 
