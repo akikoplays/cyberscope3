@@ -76,6 +76,7 @@ BootState.prototype = {
         game.load.audio('floppy', 'assets/floppy.mp3');
         game.load.audio('floppyread', 'assets/floppyread.mp3');
         game.load.audio('onward', 'assets/onward.mp3');
+        game.load.audio('intro', 'assets/intro.mp3');
     },
 
     create: function() {
@@ -105,6 +106,8 @@ BootState.prototype = {
         this.objs.floppyreadsnd = game.add.audio('floppyread');
         this.objs.floppyreadsnd.volume = 0.5;
         this.objs.music = game.add.audio('onward');
+        this.objs.intromusic = game.add.audio('intro');
+        this.objs.intromusic.play();
         // game.sound.setDecodedCallback(sounds, start, this);
     },
 
