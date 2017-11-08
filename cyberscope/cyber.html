@@ -73,6 +73,9 @@ BootState.prototype = {
         game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
         game.load.image('icon', 'assets/icon.png');
         game.load.spritesheet('icon', 'assets/icon.png', 56, 62, 1);
+        game.load.audio('floppy', 'assets/floppy.mp3');
+        game.load.audio('floppyread', 'assets/floppyread.mp3');
+
     },
 
     create: function() {
@@ -97,6 +100,11 @@ BootState.prototype = {
         };
         this.objs['module'].buffer = game.cache.getBinary(this.objs['mod']);
         this.objs['module'].parse();
+
+        this.objs.floppysnd = game.add.audio('floppy');
+        this.objs.floppyreadsnd = game.add.audio('floppyread');
+        this.objs.floppyreadsnd.volume = 0.5;
+        // game.sound.setDecodedCallback(sounds, start, this);
     },
 
 
@@ -163,6 +171,7 @@ BootState.prototype = {
             this.quest = 'hold2';
             console.log('quest set to hold2');
         } else if (this.quest == 'switchtokick') {
+            this.objs.floppysnd.play();
 
             var sprite = game.add.sprite(0, 0, "kickstart");
             that.objs['floppy'] = game.add.sprite(564, 318, 'floppy');
@@ -185,8 +194,10 @@ BootState.prototype = {
                 // animate diskette
                 game.add.tween(that.objs['floppy']).to({height:10}, 1000, Phaser.Easing.None, true);
                 game.add.tween(that.objs['floppy']).to({y:260}, 1000, Phaser.Easing.None, true);
+
                 // after 5 sec fade to black
                 game.time.events.add(3000, function() {
+                    that.objs.floppyreadsnd.play();
                     that.objs["black"] = black;
                     that.objs["tween"] = game.add.tween(black).to({alpha:1.0},1000,Phaser.Easing.None,true);
                     // after 2 seconds, show reader
