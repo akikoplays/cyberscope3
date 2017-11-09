@@ -64,6 +64,26 @@ ReaderState.prototype = {
         });
     },
 
+    create: function() {
+
+        
+        console.log("midlight check: " + game.cache.checkImageKey('midlight'));
+
+        game.stage.backgroundColor = "#200000";
+        game.stage.smoothed = false;
+
+        this.objs['titleFont'] = game.add.retroFont('171', 16, 18, "ABCDEFGHIJKLMNOPQRSTUVWXYZ| 0123456789*=!ø:.,\\?->=:;+()`", 19, 0, 1);
+
+        this.fadein(this.showTOC);
+    },
+
+
+    update: function() {
+        // Hack for passing the context of this to timeout fn
+        var that = this;
+
+    },
+
     prepareScreen: function() {
         that = this;
         json = game.cache.getJSON('contents');
@@ -92,12 +112,22 @@ ReaderState.prototype = {
             that.showTOC();
         });
 
+        // create TOC button
+        var button = game.add.button(0, 0, 
+            'alpha', this.tocOnClick, this, 0, 0, 0);
+        button.x = 0; 
+        button.y = 0;
+        button.width = game.width;
+        button.height = CINEMASCOPE;
+        button.name = "toc";
+
     },
 
     showTOC: function() {
         that = this;
         json = game.cache.getJSON('contents');
         var size = FONT_SIZE;
+        that.loc = "toc";
 
         for (i = 0; i < json.articles.length; i++) {
             var article = json.articles[i];
@@ -119,6 +149,18 @@ ReaderState.prototype = {
 
         that.objs['Articles'].alpha = 0.0;
         game.add.tween(that.objs['Articles']).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);        
+    },
+
+    tocOnClick: function(e) {
+        console.log("TOC clicked");
+        if (this.loc == "toc")
+            return;
+
+        // or hide whatever is being shown
+        else if (this.loc == "article")
+            this.hideArticle();
+        else
+            console.log("error: unknown loc " + this.loc);
     },
 
     actionOnClick: function(e) {
@@ -146,6 +188,7 @@ ReaderState.prototype = {
         title = article.title;
         text = article.body; // left text
         gfx = article.gfx;
+        that.loc = "article";
 
         y = TEXT_Y;
         x = TEXT_X;
@@ -238,25 +281,25 @@ ReaderState.prototype = {
         game.input.onDown.add(this.onClick, this);
     },
 
+    hideArticle: function() {
+        console.log("Hide article begins, launch tweens");
+        game.add.tween(that.objs['titleSprite']).to({x:-that.objs['titleSprite'].width},1000,Phaser.Easing.Cubic.Out,true);
+        game.add.tween(that.bmpBlockLeft).to({x:game.width},1000,Phaser.Easing.Cubic.Out,true);
+        game.add.tween(that.bmpBlockRight).to({x:game.width},1000,Phaser.Easing.Cubic.Out,true);
+        var tween = game.add.tween(that.objs['gfx']).to({x:game.width + RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
 
-    create: function() {
+        tween.onComplete.add(function(){
+            that.showTOC();
+        });
 
-        
-        console.log("midlight check: " + game.cache.checkImageKey('midlight'));
-
-        game.stage.backgroundColor = "#200000";
-        game.stage.smoothed = false;
-
-        this.objs['titleFont'] = game.add.retroFont('171', 16, 18, "ABCDEFGHIJKLMNOPQRSTUVWXYZ| 0123456789*=!ø:.,\\?->=:;+()`", 19, 0, 1);
-
-        this.fadein(this.showTOC);
-    },
-
-
-    update: function() {
-        // Hack for passing the context of this to timeout fn
-        var that = this;
-
+        // evict all page elements from memory
+        game.time.events.add(1200, function() {
+            that.bmpBlockRight.kill();
+            that.bmpBlockLeft.kill();
+            that.objs['titleSprite'].kill();
+            that.objs['gfx'].kill();                    
+        }
+        );        
     },
 
     onClick: function() {
@@ -291,7 +334,7 @@ ReaderState.prototype = {
                     that.bmpBlockRight.text = that.objs['blocks'][rp];
                     that.objs['curpage'] = curpage;
                 }
-            } else if (game.input.y > 0 && game.input.y < CINEMASCOPE) {
+            }/* else if (game.input.y > 0 && game.input.y < CINEMASCOPE) {
                 console.log("Pressed TOC");
 
                 console.log("Launching tweens");
@@ -312,7 +355,7 @@ ReaderState.prototype = {
                     that.objs['gfx'].kill();                    
                 }
                 );
-            }
+            }*/
         }
-    },
+    }
 };

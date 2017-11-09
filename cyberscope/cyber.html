@@ -21,7 +21,7 @@ const MUSIC_ON = false;
 // 'switchtokick'; fadeout to kickstart amiga screen
 // 'go' main entrypoint
 // 'gotoc' switch to TOC
-const START_WITH = 'go';
+const START_WITH = 'gotoc';
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
 /* ======================== BootState ==============================*/
@@ -73,6 +73,7 @@ BootState.prototype = {
         game.load.bitmapFont('gem', 'assets/gem.png', 'assets/gem.xml');
         game.load.image('icon', 'assets/icon.png');
         game.load.spritesheet('icon', 'assets/icon.png', 56, 62, 1);
+        game.load.spritesheet('alpha', 'assets/transparent.png', 16, 16, 1);
         game.load.audio('floppy', 'assets/floppy.mp3');
         game.load.audio('floppyread', 'assets/floppyread.mp3');
         game.load.audio('onward', 'assets/onward.mp3');
