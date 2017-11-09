@@ -105,21 +105,40 @@ ReaderState.prototype = {
         game.add.tween(that.objs['sFooter']).to({y:game.height - that.objs['footer'].height},1000,Phaser.Easing.Cubic.Out,true);
         game.add.tween(that.objs['sHeader']).to({y:0},1000,Phaser.Easing.Cubic.Out,true);
 
-        // assign listeners for mouse interactions
-        //game.input.onDown.add(this.onClick, this);
-
         game.time.events.add(2000, function() {
             that.showTOC();
         });
 
-        // create TOC button
+        // create TOC and other buttons
         var button = game.add.button(0, 0, 
-            'alpha', this.tocOnClick, this, 0, 0, 0);
+            'alpha', that.tocOnClick, this, 0, 0, 0);
         button.x = 0; 
         button.y = 0;
         button.width = game.width;
         button.height = CINEMASCOPE;
         button.name = "toc";
+        button.inputEnabled = false;
+        that.objs.tocButton = button;
+
+        button = game.add.button(0, 0, 
+            'alpha', that.pageOnClick, this, 0, 0, 0);
+        button.x = TEXT_X; 
+        button.y = CINEMASCOPE;
+        button.width = TEXT_BLOCK_WIDTH;
+        button.height = TEXT_BLOCK_MAX_HEIGHT;
+        button.name = "left";
+        button.inputEnabled = false;
+        that.objs.leftButton = button;
+
+        button = game.add.button(0, 0, 
+            'alpha', that.pageOnClick, this, 0, 0, 0);
+        button.x = RIGHT_BLOCK_X; 
+        button.y = TEXT_Y; 
+        button.width = TEXT_BLOCK_WIDTH;
+        button.height = TEXT_BLOCK_MAX_HEIGHT;
+        button.name = "right";
+        button.inputEnabled = false;
+        that.objs.rightButton = button;
 
     },
 
@@ -128,6 +147,9 @@ ReaderState.prototype = {
         json = game.cache.getJSON('contents');
         var size = FONT_SIZE;
         that.loc = "toc";
+        that.objs.tocButton.inputEnabled = false;
+        that.objs.leftButton.inputEnabled = false;
+        that.objs.rightButton.inputEnabled = false;
 
         for (i = 0; i < json.articles.length; i++) {
             var article = json.articles[i];
@@ -189,6 +211,9 @@ ReaderState.prototype = {
         text = article.body; // left text
         gfx = article.gfx;
         that.loc = "article";
+        that.objs.tocButton.inputEnabled = true;
+        that.objs.leftButton.inputEnabled = true;
+        that.objs.rightButton.inputEnabled = true;
 
         y = TEXT_Y;
         x = TEXT_X;
@@ -278,7 +303,7 @@ ReaderState.prototype = {
         game.add.tween(that.objs['gfx']).to({x:RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
 
         // assign listeners for mouse interactions
-        game.input.onDown.add(this.onClick, this);
+        game.input.onDown.add(that.pageOnClick, that);
     },
 
     hideArticle: function() {
@@ -302,60 +327,36 @@ ReaderState.prototype = {
         );        
     },
 
-    onClick: function() {
+    pageOnClick: function(e) {
         var that = this;
-        if (game.input.mousePointer.isDown) {
 
-            var curpage = that.objs['curpage'];
-            var pagesnum = that.objs['pagesnum'];
-            var numblocks = that.objs['numblocks'];
-            if (game.input.x > that.bmpBlockRight.x 
-                && game.input.y > TEXT_Y && game.input.y < TEXT_Y + TEXT_BLOCK_MAX_HEIGHT) {
-                    console.log("Pressed NEXT");
-                if (curpage < pagesnum) {
-                    curpage++;
-                    var lp = curpage*2;
-                    var rp = lp+1;
-                    that.bmpBlockLeft.text = that.objs['blocks'][lp];
-                    if (rp < numblocks)
-                        that.bmpBlockRight.text = that.objs['blocks'][rp];
-                    else
-                        that.bmpBlockRight.text = "";
-                    that.objs['curpage'] = curpage;
-                }
-            } else if (game.input.x > that.bmpBlockLeft.x && game.input.x < that.bmpBlockLeft.x + that.bmpBlockLeft.width 
-                && game.input.y > TEXT_Y && game.input.y < TEXT_Y + TEXT_BLOCK_MAX_HEIGHT) {
-                console.log("Pressed PREV");
-                if (curpage > 0) {
-                    curpage--;
-                    var lp = curpage*2;
-                    var rp = lp+1;
-                    that.bmpBlockLeft.text = that.objs['blocks'][lp];
+        var curpage = that.objs['curpage'];
+        var pagesnum = that.objs['pagesnum'];
+        var numblocks = that.objs['numblocks'];
+
+        if (e.name == "right") {
+                console.log("Pressed NEXT");
+            if (curpage < pagesnum) {
+                curpage++;
+                var lp = curpage*2;
+                var rp = lp+1;
+                that.bmpBlockLeft.text = that.objs['blocks'][lp];
+                if (rp < numblocks)
                     that.bmpBlockRight.text = that.objs['blocks'][rp];
-                    that.objs['curpage'] = curpage;
-                }
-            }/* else if (game.input.y > 0 && game.input.y < CINEMASCOPE) {
-                console.log("Pressed TOC");
-
-                console.log("Launching tweens");
-                game.add.tween(that.objs['titleSprite']).to({x:-that.objs['titleSprite'].width},1000,Phaser.Easing.Cubic.Out,true);
-                game.add.tween(that.bmpBlockLeft).to({x:game.width},1000,Phaser.Easing.Cubic.Out,true);
-                game.add.tween(that.bmpBlockRight).to({x:game.width},1000,Phaser.Easing.Cubic.Out,true);
-                var tween = game.add.tween(that.objs['gfx']).to({x:game.width + RIGHT_BLOCK_X},1000,Phaser.Easing.Cubic.Out,true);
-
-                tween.onComplete.add(function(){
-                    that.showTOC();
-                });
-
-                // evict all page elements from memory
-                game.time.events.add(1200, function() {
-                    that.bmpBlockRight.kill();
-                    that.bmpBlockLeft.kill();
-                    that.objs['titleSprite'].kill();
-                    that.objs['gfx'].kill();                    
-                }
-                );
-            }*/
+                else
+                    that.bmpBlockRight.text = "";
+                that.objs['curpage'] = curpage;
+            }
+        } else if (e.name == "left") {
+            console.log("Pressed PREV");
+            if (curpage > 0) {
+                curpage--;
+                var lp = curpage*2;
+                var rp = lp+1;
+                that.bmpBlockLeft.text = that.objs['blocks'][lp];
+                that.bmpBlockRight.text = that.objs['blocks'][rp];
+                that.objs['curpage'] = curpage;
+            }
         }
     }
 };
