@@ -157,20 +157,25 @@ ReaderState.prototype = {
 
             var button = game.add.button(0, 0, 
                 'icon', this.actionOnClick, this, 0, 0, 0);
-            button.width = 32;
+            button.width = 350;
             button.height = 32;
             button.x = TEXT_X;
             button.y = TEXT_Y + i*(button.height * 1.4);
             button.article = article;
             that.objs['Articles'].add(button);
 
-            var text = game.add.bitmapText(TEXT_X + button.width + 10, button.y + button.height/2 - size/2, 'gem', article.title, size);
+            var text = game.add.bitmapText(TEXT_X + 40 /*fixed icon width*/ + 10, button.y + button.height/2 - size/2, 'gem', article.title, size);
             text.tint = 0xffbb66;
             that.objs['Articles'].add(text);
         }
 
         that.objs['Articles'].alpha = 0.0;
         game.add.tween(that.objs['Articles']).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);        
+
+        that.objs.slide = game.add.sprite(800-320, 134, 'slide1');
+        that.objs.slide.alpha = 0.0;
+        game.add.tween(that.objs.slide).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);       
+        that.objs.Articles.add(that.objs.slide);
     },
 
     tocOnClick: function(e) {
