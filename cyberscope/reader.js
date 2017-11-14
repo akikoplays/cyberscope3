@@ -65,8 +65,6 @@ ReaderState.prototype = {
     },
 
     create: function() {
-
-        
         console.log("midlight check: " + game.cache.checkImageKey('midlight'));
 
         game.stage.backgroundColor = "#200000";
@@ -75,6 +73,7 @@ ReaderState.prototype = {
         this.objs['titleFont'] = game.add.retroFont('171', 16, 18, "ABCDEFGHIJKLMNOPQRSTUVWXYZ| 0123456789*=!ø:.,\\?->=:;+()`", 19, 0, 1);
 
         this.fadein(this.showTOC);
+
     },
 
 
@@ -156,7 +155,7 @@ ReaderState.prototype = {
             console.log("article #" + i + ": " + article.title);
 
             var button = game.add.button(0, 0, 
-                'icon', this.actionOnClick, this, 0, 0, 0);
+                'icon', this.articleOnClick, this, 0, 0, 0);
             button.width = 32;
             button.height = 32;
             button.x = TEXT_X;
@@ -171,8 +170,15 @@ ReaderState.prototype = {
 
         that.objs['Articles'].alpha = 0.0;
         game.add.tween(that.objs['Articles']).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);        
+
+        // that.objs.rtt = game.add.renderTexture(800, 600, 'rtt');
+//        that.objs.rttSprite = game.add.sprite(0, 0, this.objs.rtt);
+        // that.objs.rtt.renderXY(game.stage, 0, 0, true);
+
     },
 
+    // Callback when TOC button is clicked.
+    // Decides what to hide in order to show TOC.
     tocOnClick: function(e) {
         console.log("TOC clicked");
         if (this.loc == "toc")
@@ -185,7 +191,9 @@ ReaderState.prototype = {
             console.log("error: unknown loc " + this.loc);
     },
 
-    actionOnClick: function(e) {
+    // Callback that handles article selection from the TOC.
+    // Cleanes up TOC display list, releases its resources and animates selected article into view.
+    articleOnClick: function(e) {
         console.log(e.article.title);
         var tween = game.add.tween(that.objs['Articles']).to({alpha:0.0},1000,Phaser.Easing.Cubic.Out,true);
         that = this;
@@ -205,6 +213,8 @@ ReaderState.prototype = {
 
     },
 
+    // Central function, assembles the page & gfx based on selected article data. 
+    // Note: you have to call hideArticle() to properly close it.
     showArticle: function(article) {
         that = this;
         title = article.title;
@@ -306,6 +316,7 @@ ReaderState.prototype = {
         game.input.onDown.add(that.pageOnClick, that);
     },
 
+    // Disassembles pages and gfx, releasing resources in the end
     hideArticle: function() {
         console.log("Hide article begins, launch tweens");
         game.add.tween(that.objs['titleSprite']).to({x:-that.objs['titleSprite'].width},1000,Phaser.Easing.Cubic.Out,true);
@@ -327,6 +338,7 @@ ReaderState.prototype = {
         );        
     },
 
+    // Callback that handles left/right page clicks
     pageOnClick: function(e) {
         var that = this;
 
