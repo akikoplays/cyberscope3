@@ -78,12 +78,15 @@ BootState.prototype = {
         game.load.audio('floppyread', 'assets/floppyread.mp3');
         game.load.audio('onward', 'assets/onward.mp3');
         game.load.audio('intro', 'assets/intro.mp3');
+
+        // load slide show images
+        game.load.image('slide1', 'assets/slide1.jpg');
     },
 
     create: function() {
 
         game.stage.backgroundColor = "#200000";
-        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        game.scale.scaleMode = Phaser.ScaleManager.NO_SCALE;
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
 
