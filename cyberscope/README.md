@@ -37,4 +37,7 @@ While working on this project I learned couple of things, here they are :)
     // to call a function after some time:
     game.time.events.add(3000, function() {...});
 
+    // to call a repeating function with some delay:
+    game.time.events.repeat(100, that.msgwords.length, that.showText, that);
+
 

@@ -1,6 +1,6 @@
-<!doctype html> 
-<html lang="en"> 
-<head> 
+<!doctype html>
+<html lang="en">
+<head>
 	<meta charset="UTF-8" />
 	<title>Cyberscope 3, September 2017</title>
     <script src="//cdn.jsdelivr.net/phaser/2.6.2/phaser.min.js"></script>
@@ -22,7 +22,7 @@ const MUSIC_ON = false;
 // 'go' main entrypoint
 // 'gotoc' switch to TOC
 const START_WITH = 'gotoc';
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+var game = new Phaser.Game(840, 600, Phaser.AUTO, 'game');
 
 /* ======================== BootState ==============================*/
 /*  loads starting screen, shows some blitter image fx and gives control
@@ -97,7 +97,7 @@ BootState.prototype = {
         game.stage.smoothed = false;
         this.area = new Phaser.Rectangle(0, this.bmd.height, this.bmd.width, 1);
         this.dropTime = game.time.now + 250;
-        
+
         this.objs['module'] = new Protracker();
         that = this;
         this.objs['module'].onReady = function() {
@@ -127,7 +127,7 @@ BootState.prototype = {
                     this.bmd.copyRect('titlescreen', this.area, 0, y);
                 }
 
-                this.area.y-=offset; 
+                this.area.y-=offset;
                 this.dropTime = game.time.now + 1;
 
                 if (this.area.y <= 0) {
@@ -141,7 +141,7 @@ BootState.prototype = {
             var flash = game.add.graphics(0, 0);
             flash.beginFill(0xffffff);
             flash.alpha = 1;
-            flash.drawRect(0, 0, 
+            flash.drawRect(0, 0,
                 game.cache.getImage('titlescreen').width, game.cache.getImage('titlescreen').height);
             flash.endFill();
             this.objs["flash"] = flash;
@@ -187,11 +187,11 @@ BootState.prototype = {
             that.objs['floppy'].height = 180;
             that.objs["kickstart"] = sprite;
             sprite.width = 800;
-            sprite.height = 600;    
+            sprite.height = 600;
             var black = game.add.graphics(0, 0);
             black.beginFill(0x000000);
             black.alpha = 1;
-            black.drawRect(0, 0, 
+            black.drawRect(0, 0,
                 // game.cache.getImage('titlescreen').width, game.cache.getImage('titlescreen').height);
                 game.width, game.height);
             black.endFill();
@@ -214,7 +214,7 @@ BootState.prototype = {
                         that.objs.music.loopFull();
                     })
                 });
-                
+
             });
             that.quest = 'holdcity';
         } else if (this.quest == 'gotoc') {

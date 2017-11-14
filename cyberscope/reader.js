@@ -30,10 +30,10 @@ ReaderState.prototype = {
         json = game.cache.getJSON('contents');
         console.log("contents json loaded: " + json);
         for (i = 0; i < json.articles.length; i++) {
-            title = json.articles[i].title;
-            text = json.articles[i].body;
+            // title = json.articles[i].title;
+            // text = json.articles[i].body;
             gfx = json.articles[i].gfx;
-            console.log(title + ", " + text + ", " + gfx);
+            // console.log(title + ", " + text + ", " + gfx);
 
             game.load.image(gfx, 'assets/' + gfx);
             console.log('loading: ' + 'assets/' + gfx);
@@ -49,13 +49,13 @@ ReaderState.prototype = {
         var black = game.add.graphics(0, 0);
         black.beginFill(0x000000);
         black.alpha = 1;
-        black.drawRect(0, 0, 
+        black.drawRect(0, 0,
             game.width, game.height);
         black.endFill();
         that.objs["black"] = black;
         that.objs["tween"] = game.add.tween(black).to({alpha:0},1000,Phaser.Easing.None,true);
         that.objs["tween"].onComplete.add(function(){
-            // another way: 
+            // another way:
             // game.time.events.add(2000, onCompleteFn, 0, that);
             game.time.events.add(2000, function() {
                 that.objs["tween"] = game.add.tween(that.objs['midlight']).to({alpha:0.33},1000,Phaser.Easing.None,true);
@@ -73,14 +73,12 @@ ReaderState.prototype = {
         this.objs['titleFont'] = game.add.retroFont('171', 16, 18, "ABCDEFGHIJKLMNOPQRSTUVWXYZ| 0123456789*=!ø:.,\\?->=:;+()`", 19, 0, 1);
 
         this.fadein(this.showTOC);
-
     },
 
 
     update: function() {
         // Hack for passing the context of this to timeout fn
         var that = this;
-
     },
 
     prepareScreen: function() {
@@ -91,7 +89,7 @@ ReaderState.prototype = {
 
         title = json.articles[1].title;
         text = json.articles[1].body; // left text
-        text2 = json.articles[0].body2; // right text 
+        text2 = json.articles[0].body2; // right text
         gfx = json.articles[1].gfx;
 
         // add header and footer images
@@ -109,9 +107,9 @@ ReaderState.prototype = {
         });
 
         // create TOC and other buttons
-        var button = game.add.button(0, 0, 
+        var button = game.add.button(0, 0,
             'alpha', that.tocOnClick, this, 0, 0, 0);
-        button.x = 0; 
+        button.x = 0;
         button.y = 0;
         button.width = game.width;
         button.height = CINEMASCOPE;
@@ -119,9 +117,9 @@ ReaderState.prototype = {
         button.inputEnabled = false;
         that.objs.tocButton = button;
 
-        button = game.add.button(0, 0, 
+        button = game.add.button(0, 0,
             'alpha', that.pageOnClick, this, 0, 0, 0);
-        button.x = TEXT_X; 
+        button.x = TEXT_X;
         button.y = CINEMASCOPE;
         button.width = TEXT_BLOCK_WIDTH;
         button.height = TEXT_BLOCK_MAX_HEIGHT;
@@ -129,10 +127,10 @@ ReaderState.prototype = {
         button.inputEnabled = false;
         that.objs.leftButton = button;
 
-        button = game.add.button(0, 0, 
+        button = game.add.button(0, 0,
             'alpha', that.pageOnClick, this, 0, 0, 0);
-        button.x = RIGHT_BLOCK_X; 
-        button.y = TEXT_Y; 
+        button.x = RIGHT_BLOCK_X;
+        button.y = TEXT_Y;
         button.width = TEXT_BLOCK_WIDTH;
         button.height = TEXT_BLOCK_MAX_HEIGHT;
         button.name = "right";
@@ -154,7 +152,7 @@ ReaderState.prototype = {
             var article = json.articles[i];
             console.log("article #" + i + ": " + article.title);
 
-            var button = game.add.button(0, 0, 
+            var button = game.add.button(0, 0,
             'icon', this.articleOnClick, this, 0, 0, 0);
             button.width = 350;
             button.height = 32;
@@ -169,16 +167,18 @@ ReaderState.prototype = {
         }
 
         that.objs['Articles'].alpha = 0.0;
-        game.add.tween(that.objs['Articles']).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);        
+        game.add.tween(that.objs['Articles']).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);
 
-        // that.objs.rtt = game.add.renderTexture(800, 600, 'rtt');
-//        that.objs.rttSprite = game.add.sprite(0, 0, this.objs.rtt);
-        // that.objs.rtt.renderXY(game.stage, 0, 0, true);
-
-        that.objs.slide = game.add.sprite(800-320, 134, 'slide1');
+        that.objs.slide = game.add.sprite(800, 134, 'slide1');
         that.objs.slide.alpha = 0.0;
-        game.add.tween(that.objs.slide).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);       
+        game.add.tween(that.objs.slide).to({alpha:1.0},1000,Phaser.Easing.Cubic.Out,true);
+        var tween = game.add.tween(that.objs.slide).to({x:800-320+40},1500,Phaser.Easing.Cubic.Out,true);
         that.objs.Articles.add(that.objs.slide);
+
+        tween.onComplete.add(function(){
+            that.objs.logger = new Logger(that);
+            that.objs.logger.start();
+        });
     },
 
     // Callback when TOC button is clicked.
@@ -208,16 +208,16 @@ ReaderState.prototype = {
 
         // evict all TOC elements from memory
         game.time.events.add(1200, function() {
-            that.objs['Articles'].forEach(function(item) {
+            that.objs.Articles.forEach(function(item) {
                 item.kill();
             });
-            that.objs['Articles'].removeAll();
+            that.objs.Articles.removeAll();
         }
         );
 
     },
 
-    // Central function, assembles the page & gfx based on selected article data. 
+    // Central function, assembles the page & gfx based on selected article data.
     // Note: you have to call hideArticle() to properly close it.
     showArticle: function(article) {
         that = this;
@@ -252,7 +252,7 @@ ReaderState.prototype = {
         that.objs['blocks'] = {};
         var lastword = 0;
         while (!eot) {
-            
+
             var char = begin;
             var lastwordbegin = char;
 
@@ -272,7 +272,7 @@ ReaderState.prototype = {
                     if (text[char] == ' ' || text[char] == '.' || text[char] == '\n')
                         break;
                 }
-                
+
                 that.bmpBlockLeft.text = text.substring(begin, char);
                 var picoffset = 0;
                 if (blockid & 1)
@@ -337,9 +337,9 @@ ReaderState.prototype = {
             that.bmpBlockRight.kill();
             that.bmpBlockLeft.kill();
             that.objs['titleSprite'].kill();
-            that.objs['gfx'].kill();                    
+            that.objs['gfx'].kill();
         }
-        );        
+        );
     },
 
     // Callback that handles left/right page clicks
@@ -375,4 +375,66 @@ ReaderState.prototype = {
             }
         }
     }
+};
+
+Logger = function(parent){
+    this.x = 0;
+    this.y = 0;
+    this.tail = 0;
+    this.parent = parent;
+    this.text = "It is a rainy day. I hear construction workers\npounding on concrete, the floor above. I wonder how\nmuch light is necessary to keep me awake, the\ntungsten fog seems to lack shadows, if I don't see\nshadows, I easily fall asleep.";
+    this.showText = "";
+    this.cur = 0;
+    this.obj = game.add.bitmapText(parent.objs.slide.x, parent.objs.slide.y+parent.objs.slide.height, 
+        'gem', this.showText, 12);
+    this.obj.maxWidth = parent.objs.slide.width;
+
+    this.cursor = game.add.graphics(this.obj.x, this.obj.y+2);
+    this.cursor.beginFill(0xffffff);
+    this.cursor.alpha = 1;
+    this.cursor.drawRect(0, 0,
+        10, 10);
+    this.cursor.endFill();
+    this.cursor.cnt = 0;
+};
+
+Logger.prototype = {
+
+
+  setXY: function(x, y) {
+    this.x = x;
+    this.y = y;
+  },
+
+  start: function() {
+    var that = this;
+    game.time.events.repeat(20, that.text.length, that.typeIt, that);
+    this.parent.objs.Articles.add(this.obj);
+    this.parent.objs.Articles.add(this.cursor);
+    game.time.events.repeat(20, 1000000, that.cursorBlink, that);
+  },
+
+  update: function() {
+    var that = this;
+  },
+
+  typeIt: function() {
+    var ch = this.text[this.tail++];
+    this.showText += ch;
+    this.obj.text = this.showText;
+    if (ch == '\n') this.newline = true;
+  },
+
+  cursorBlink: function() {
+    this.cursor.x = this.obj.x + this.cursor.cnt*(8*0.75);
+    if (this.showText.length < this.text.length)
+        this.cursor.cnt++;
+    if (this.newline) {
+        this.cursor.cnt = 0;
+        this.cursor.y += 16*0.75;
+        this.newline = false;
+    }
+    this.cursor.alpha = this.cursor.alpha == 1 ? this.cursor.alpha = 0 : this.cursor.alpha = 1;
+  }
+
 };
