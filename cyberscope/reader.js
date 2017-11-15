@@ -321,7 +321,8 @@ ReaderState.prototype = {
 
         // show page indicator
         that.objs.indicator = new Indicator(that);
-        that.objs.indicator.setup(RIGHT_BLOCK_X + TEXT_BLOCK_WIDTH, TEXT_Y + TEXT_BLOCK_MAX_HEIGHT, 10, 4, 10);
+        that.objs.indicator.setup(RIGHT_BLOCK_X+TEXT_BLOCK_WIDTH, TEXT_Y+TEXT_BLOCK_MAX_HEIGHT, 
+            10, 4, that.objs.pagesnum);
         that.objs.indicator.setStep(0);
 
     },
@@ -339,6 +340,7 @@ ReaderState.prototype = {
         });
 
         // evict all page elements from memory
+        that.objs.indicator.kill();
         game.time.events.add(1200, function() {
             that.bmpBlockRight.kill();
             that.bmpBlockLeft.kill();
@@ -360,6 +362,7 @@ ReaderState.prototype = {
                 console.log("Pressed NEXT");
             if (curpage < pagesnum) {
                 curpage++;
+                that.objs.indicator.setStep(curpage);
                 var lp = curpage*2;
                 var rp = lp+1;
                 that.bmpBlockLeft.text = that.objs['blocks'][lp];
@@ -373,6 +376,7 @@ ReaderState.prototype = {
             console.log("Pressed PREV");
             if (curpage > 0) {
                 curpage--;
+                that.objs.indicator.setStep(curpage);
                 var lp = curpage*2;
                 var rp = lp+1;
                 that.bmpBlockLeft.text = that.objs['blocks'][lp];
@@ -406,11 +410,6 @@ Logger = function(parent){
 
 Logger.prototype = {
 
-
-  setXY: function(x, y) {
-    this.x = x;
-    this.y = y;
-  },
 
   start: function() {
     var that = this;
@@ -464,7 +463,12 @@ Indicator.prototype = {
         console.log("Setting up " + this.numBlocks);
 
         var that = this;
-        game.time.events.repeat(100, 1000000, that.updateGfx, that);
+        that.blinkEvt = game.time.events.repeat(100, 1000000, that.updateGfx, that);
+    },
+
+    kill() {
+        game.time.events.remove(that.blinkEvt);
+        this.blocks.kill();        
     },
 
     setStep: function(idx) {
@@ -473,14 +477,14 @@ Indicator.prototype = {
 
     updateGfx: function() {
         this.blocks.clear();
-        for (i=this.numBlocks-1; i>=0; i--) {
+        for (i=this.numBlocks; i>=0; i--) {
 
-            if (this.current == (this.numBlocks-i-1) && (this.osc++ & 1)) 
+            if (this.current == (this.numBlocks-i) && (this.osc++ & 1)) 
                 this.blocks.beginFill(0xffffff);
             else 
                 this.blocks.lineStyle(2, 0xffffff, 1);            
             this.blocks.drawRect(-i*this.size - i*this.spacing, 0, this.size, this.size);
-            if (this.current == this.numBlocks-i-1) 
+            if (this.current == this.numBlocks-i) 
                 this.blocks.endFill();
         }        
     }
