@@ -318,6 +318,12 @@ ReaderState.prototype = {
 
         // assign listeners for mouse interactions
         game.input.onDown.add(that.pageOnClick, that);
+
+        // show page indicator
+        that.objs.indicator = new Indicator(that);
+        that.objs.indicator.setup(RIGHT_BLOCK_X + TEXT_BLOCK_WIDTH, TEXT_Y + TEXT_BLOCK_MAX_HEIGHT, 10, 4, 10);
+        that.objs.indicator.setStep(0);
+
     },
 
     // Disassembles pages and gfx, releasing resources in the end
@@ -382,7 +388,7 @@ Logger = function(parent){
     this.y = 0;
     this.tail = 0;
     this.parent = parent;
-    this.text = "It is a rainy day. I hear construction workers\npounding on concrete, the floor above. I wonder how\nmuch light is necessary to keep me awake, the\ntungsten fog seems to lack shadows, if I don't see\nshadows, I easily fall asleep.";
+    this.text = "It is a rainy day. I hear construction workers\npounding on concrete, the floor above. I wonder how\nmuch light is necessary to keep me awake, the\ntungsten fog seems to lack shadows, if I don't see\nshadows, I easily fall asleep. ";
     this.showText = "";
     this.cur = 0;
     this.obj = game.add.bitmapText(parent.objs.slide.x, parent.objs.slide.y+parent.objs.slide.height, 
@@ -436,5 +442,48 @@ Logger.prototype = {
     }
     this.cursor.alpha = this.cursor.alpha == 1 ? this.cursor.alpha = 0 : this.cursor.alpha = 1;
   }
+
+};
+
+Indicator = function(parent) {
+    this.numBlocks = 0;
+};
+
+Indicator.prototype = {
+    setup: function(x, y, size, spacing, numBlocks) {
+        this.numBlocks = numBlocks;
+        this.curBlock = 0;
+        this.x = x;
+        this.y = y;
+        this.spacing = spacing;
+        this.size = size;
+        this.current = 0;
+        this.osc = 0;
+
+        this.blocks = game.add.graphics(this.x /*+ this.numBlocks*this.size + this.numBlocks*spacing*/, this.y);
+        console.log("Setting up " + this.numBlocks);
+
+        var that = this;
+        game.time.events.repeat(100, 1000000, that.updateGfx, that);
+    },
+
+    setStep: function(idx) {
+        this.current = idx;
+    },
+
+    updateGfx: function() {
+        this.blocks.clear();
+        for (i=this.numBlocks-1; i>=0; i--) {
+
+            if (this.current == (this.numBlocks-i-1) && (this.osc++ & 1)) 
+                this.blocks.beginFill(0xffffff);
+            else 
+                this.blocks.lineStyle(2, 0xffffff, 1);            
+            this.blocks.drawRect(-i*this.size - i*this.spacing, 0, this.size, this.size);
+            if (this.current == this.numBlocks-i-1) 
+                this.blocks.endFill();
+        }        
+    }
+
 
 };
