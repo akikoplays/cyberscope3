@@ -30,11 +30,7 @@ ReaderState.prototype = {
         json = game.cache.getJSON('contents');
         console.log("contents json loaded: " + json);
         for (i = 0; i < json.articles.length; i++) {
-            // title = json.articles[i].title;
-            // text = json.articles[i].body;
             gfx = json.articles[i].gfx;
-            // console.log(title + ", " + text + ", " + gfx);
-
             game.load.image(gfx, 'assets/' + gfx);
             console.log('loading: ' + 'assets/' + gfx);
         }
@@ -322,7 +318,7 @@ ReaderState.prototype = {
         // show page indicator
         that.objs.indicator = new Indicator(that);
         that.objs.indicator.setup(RIGHT_BLOCK_X+TEXT_BLOCK_WIDTH, TEXT_Y+TEXT_BLOCK_MAX_HEIGHT, 
-            10, 4, that.objs.pagesnum);
+            6, 4, that.objs.pagesnum);
         that.objs.indicator.setStep(0);
 
     },
@@ -459,7 +455,7 @@ Indicator.prototype = {
         this.current = 0;
         this.osc = 0;
 
-        this.blocks = game.add.graphics(this.x /*+ this.numBlocks*this.size + this.numBlocks*spacing*/, this.y);
+        this.blocks = game.add.graphics(this.x, this.y);
         console.log("Setting up " + this.numBlocks);
 
         var that = this;
@@ -487,6 +483,7 @@ Indicator.prototype = {
             if (this.current == this.numBlocks-i) 
                 this.blocks.endFill();
         }        
+        this.blocks.tint = 0xaabbff;
     }
 
 
