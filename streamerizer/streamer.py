@@ -49,14 +49,16 @@ def collect_files_of_type(root, extension):
 
 def run_cli(cmdstr):
     print "Running CLI: ", cmdstr
+    ret = []
     proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE)
     for line in proc.stdout:
         print line
+        ret.append(line)
     proc.wait()
     if proc.returncode != 0:
         print "Error: processor failed, ret code = ", proc.returncode
         exit(1)
-    return
+    return proc.returncode, ret
 
 
 def run_slide_show(args):
@@ -114,6 +116,18 @@ def run_avi_shuffler(args):
 
     while True:
         for avi in avis:
+
+            # determine video resolution using ffprobe
+            cmdstr = "ffprobe -v error -show_entries stream=width,height -of default=noprint_wrappers=1 \"%s/%s\"" % (args.input, avi)
+            err, output = run_cli(cmdstr)
+            dims = output[0].split('=')
+            w = int(dims[1].strip())
+            dims = output[1].split('=')
+            h = int(dims[1].strip())
+            print 'Video resolution : %s x %s ' % (w, h)
+
+            # todo: figure out aspect ratio / fit to screen!
+            
             cmdstr = "gst-launch-1.0 filesrc location=\"%s/%s\" ! %s" % (args.input, avi, args.output)
             run_cli(cmdstr)
 
