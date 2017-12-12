@@ -5,7 +5,7 @@ import os.path
 import sys
 import subprocess
 import argparse
-from PIL import Image
+# from PIL import Image
 
 
 '''
@@ -33,6 +33,10 @@ To stream it will use gstreamer.
 
 
 '''
+
+
+def get_screen_resolution():
+    return 656, 512
 
 
 def collect_files_of_type(root, extension):
@@ -113,6 +117,7 @@ def run_avi_shuffler(args):
     print "-- converting them to avis to be stored in: %s" % args.output
 
     avis = collect_files_of_type(args.input, "avi")
+    scrw, scrh = get_screen_resolution()
 
     while True:
         for avi in avis:
@@ -127,7 +132,20 @@ def run_avi_shuffler(args):
             print 'Video resolution : %s x %s ' % (w, h)
 
             # todo: figure out aspect ratio / fit to screen!
-            
+            # hint: https://stackoverflow.com/a/6565988
+            rs = scrw / scrh
+            ri = w/h
+            if rs > ri :
+                fitw = w * scrw/h # imgw * screenh/imgh
+                fith = scrh
+            else:
+                fitw = scrw
+                fith = h * scrw/w # imgh * screenw/imgw
+
+#            cmdstr = "gst-launch-1.0 filesrc location=\"%s/%s\" ! %s" % (args.input, avi, args.output)
+#             args.output = " avidemux ! mpeg4videoparse ! avdec_mpeg4 ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s ! autovideoconvert ! autovideosink" % (fitw, fith)
+#             args.output = " avidemux ! mpeg4videoparse ! avdec_mpeg4 ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s ! openh264enc ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.1.63 port=5000" % (fitw, fith)
+            args.output = " avidemux ! mpeg4videoparse ! avdec_mpeg4 ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s ! videobox autocrop=true ! \"video/x-raw, width=%s, height=%s\" ! jpegenc ! rtpjpegpay ! udpsink host=192.168.1.63 port=5000" % (fitw, fith, scrw, scrh)
             cmdstr = "gst-launch-1.0 filesrc location=\"%s/%s\" ! %s" % (args.input, avi, args.output)
             run_cli(cmdstr)
 
