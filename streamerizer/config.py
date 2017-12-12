@@ -25,7 +25,12 @@ If you want to stream the decoded video as mpeg to a udp recipient set output to
 
 
 gst = { 'input' : './avis',
-        'output' : ' jpegenc ! rtpjpegpay ! udpsink host=192.168.1.63 port=5000 ',#'autovideosink'
+# RPI version when streaming from localhost to localhost (i know, sounds stupid, but occasional gst lockups happen when gst plays direct from avi to fb)
+        'output' : ' videoconvert ! video/x-raw,format=I420 ! jpegenc ! rtpjpegpay ! udpsink host=127.0.0.1 port=5000 ',
+# OSX: show on screen
+#'autovideosink',
+# RPI: show on tft framebuffer, no localhost loopback streaming
+#'fbdevsink',
         'screen' : [656,512],
-        'decoder' : 'avdec_mpeg4'
+        'decoder' : 'omxmpeg4videodec'
         }
