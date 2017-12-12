@@ -19,13 +19,27 @@ const LEFT_BLOCK_X = TEXT_X;
 const RIGHT_BLOCK_X = TEXT_X + TEXT_BLOCK_WIDTH + TEXT_BLOCK_SPACE;
 const FONT_SIZE = 16;
 
+class Temp {
+    constructor(str) {
+        this._name = str;
+    }
+
+    tell() {
+        console.log(this._name);
+    }
+}
+
 ReaderState.prototype = {
 
     init: function() {
-
     },
 
     preload: function() {
+        let tmp = new Temp("Deffard");
+        console.log("######");
+        tmp.tell();
+
+
         // parse articles
         json = game.cache.getJSON('contents');
         console.log("contents json loaded: " + json);

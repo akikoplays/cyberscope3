@@ -22,6 +22,9 @@ What are cmd line args?
 ========================
 -i input folder (e.g. python streamer.py -i ./downloaded_anims/
 -o output sink (e.g. python streamer.py -i ./downloaded_anims/ -o fbdevsink
+-c convert source animgifs to avis (e.g. ./streamer.py -c -i ./animgifs -o ./avis 
+-p play as a) "slideshow or b) "avi"; slideshow is the old way, convert to frames, multifilesrc frames
+
 
 What does it use?
 ==================
@@ -31,7 +34,9 @@ To stream it will use gstreamer.
 
 '''
 
-def collectFilesOfType(root, extension):
+
+def collect_files_of_type(root, extension):
+
     print "-- collecting files with extension: %s" % (extension)
     list = []
     for item in os.listdir(root):
@@ -42,19 +47,27 @@ def collectFilesOfType(root, extension):
     return list
 
 
-def main():
+def run_cli(cmdstr):
+    print "Running CLI: ", cmdstr
+    proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE)
+    for line in proc.stdout:
+        print line
+    proc.wait()
+    if proc.returncode != 0:
+        print "Error: processor failed, ret code = ", proc.returncode
+        exit(1)
+    return
+
+
+def run_slide_show(args):
+
     temp_folder = "./unwrapped"
-    inputflags = "./"
-    outputflags = "x264enc ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.1.64 port=5000"
-    parser = argparse.ArgumentParser(description='Akikos automated anim gif streamer.')
-    parser.add_argument('-i', '--input', type=str, default=inputflags, help='source folder to scan for *.gif files to process')
-    parser.add_argument('-o', '--output', type=str, default=outputflags, help='you can put fbdevsink or fakesink or filesink location="somepath"')
-    args = parser.parse_args()
 
-    print "-- setting input to %s" % (args.input)
-    print "-- setting output to %s" % (args.output)
-
-    gifs = collectFilesOfType(args.input, "gif")
+    print "Starting slide show player"
+    print "-- reading animgifs from: %s" % args.input
+    print "-- gst-sink them to: %s" % args.output
+    print "-- temp folder is: %s" % temp_folder
+    gifs = collect_files_of_type(args.input, "gif")
 
     idx = 0
     while True:
@@ -80,27 +93,72 @@ def main():
             # cmdstr = "gst-launch-1.0 multifilesrc location=\"%s/frame-%%d.png\" loop=false start-index=1 caps=\"image/png,framerate=\(fraction\)12/1\" ! pngdec ! videoconvert ! fbdevsink" % (temp_folder)
 
             cmdstr = "gst-launch-1.0 multifilesrc location=\"%s/frame-%%d.png\" loop=false start-index=1 caps=\"image/png,framerate=\(fraction\)12/1\" ! pngdec ! videoconvert ! %s" % (temp_folder, args.output)
-
-
-            proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE)
-            for line in proc.stdout:
-                print line
-            proc.wait()
-            if proc.returncode != 0:
-                print "Error: processor failed, ret code = ", proc.returncode
-                exit(1)
+            run_cli(cmdstr)
 
             print "Deleting temp png sequence ..."
             cmdstr = "rm %s/*.png" % (temp_folder)
-            proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE)
-            for line in proc.stdout:
-                print line
-            proc.wait()
-            if proc.returncode != 0:
-                print "Error: processor failed, ret code = ", proc.returncode
-                exit(1)
+            run_cli(cmdstr)
 
     print "looping"
+
+    return
+
+
+def run_avi_shuffler(args):
+
+    print "Starting avi shuffle player"
+    print "-- reading animgifs from: %s" % args.input
+    print "-- converting them to avis to be stored in: %s" % args.output
+
+    avis = collect_files_of_type(args.input, "avi")
+
+    while True:
+        for avi in avis:
+            cmdstr = "gst-launch-1.0 filesrc location=\"%s/%s\" ! %s" % (args.input, avi, args.output)
+            run_cli(cmdstr)
+
+    return
+
+
+def run_converter(args):
+
+    print "Starting gif to avi batch converter"
+    print "-- reading animgifs from: %s" % args.input
+    print "-- converting them to avis to be stored in: %s" % args.output
+    gifs = collect_files_of_type(args.input, "gif")
+
+    for gif in gifs:
+        cmd = "ffmpeg -i %s/%s %s/%s.avi" % (args.input, gif, args.output, gif)
+        run_cli(cmd)
+
+    return
+
+
+def main():
+
+    inputflags = "./"
+    outputflags = "x264enc ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.1.64 port=5000"
+    convertflags = ""
+    playflags = "avi"
+
+    parser = argparse.ArgumentParser(description='Akikos automated anim gif streamer.')
+    parser.add_argument('-i', '--input', type=str, default=inputflags, help='source folder to scan for *.gif files to process')
+    parser.add_argument('-o', '--output', type=str, default=outputflags, help='you can put fbdevsink or fakesink or filesink location="somepath"')
+    parser.add_argument('-c', '--convert', action="store_true", help='take all animgifs from -i and create avis in -o folder; uses ffmpeg')
+    parser.add_argument('-p', '--play', type=str, default='', help='if set to slideshow: convert each gif to frames, then show frames as slideshow, then delete frames; else if avi play them using avi (mp4) shuffler')
+    args = parser.parse_args()
+
+    print args
+
+    if args.play == 'slideshow':
+        run_slide_show(args)
+    elif args.play == 'avi':
+            run_avi_shuffler(args)
+    elif args.convert:
+        run_converter(args)
+    else:
+        run_avi_shuffler(args)
+
 
 if __name__ == "__main__":
     main()

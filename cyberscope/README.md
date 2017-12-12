@@ -41,3 +41,10 @@ While working on this project I learned couple of things, here they are :)
     game.time.events.repeat(100, that.msgwords.length, that.showText, that);
 
 
+	// If you need to pass some arguments to the lambda function:
+    game.time.events.add(2000, onCompleteFn, 0, that);
+    // that way the function onCompleteFn(that){..} will be able to use that.xxx from the caller.
+
+ES6 JavaScript OOP:
+https://www.sitepoint.com/object-oriented-javascript-deep-dive-es6-classes/
+
