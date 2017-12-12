@@ -6,6 +6,7 @@ import sys
 import subprocess
 import argparse
 # from PIL import Image
+import config as cfg
 
 
 '''
@@ -36,7 +37,7 @@ To stream it will use gstreamer.
 
 
 def get_screen_resolution():
-    return 656, 512
+    return cfg.gst['screen'][0], cfg.gst['screen'][1]
 
 
 def collect_files_of_type(root, extension):
@@ -145,8 +146,11 @@ def run_avi_shuffler(args):
 #            cmdstr = "gst-launch-1.0 filesrc location=\"%s/%s\" ! %s" % (args.input, avi, args.output)
 #             args.output = " avidemux ! mpeg4videoparse ! avdec_mpeg4 ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s ! autovideoconvert ! autovideosink" % (fitw, fith)
 #             args.output = " avidemux ! mpeg4videoparse ! avdec_mpeg4 ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s ! openh264enc ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.1.63 port=5000" % (fitw, fith)
-            args.output = " avidemux ! mpeg4videoparse ! avdec_mpeg4 ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s ! videobox autocrop=true ! \"video/x-raw, width=%s, height=%s\" ! jpegenc ! rtpjpegpay ! udpsink host=192.168.1.63 port=5000" % (fitw, fith, scrw, scrh)
-            cmdstr = "gst-launch-1.0 filesrc location=\"%s/%s\" ! %s" % (args.input, avi, args.output)
+#             args.output = " avidemux ! mpeg4videoparse ! avdec_mpeg4 ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s ! videobox autocrop=true ! \"video/x-raw, width=%s, height=%s\" ! jpegenc ! rtpjpegpay ! udpsink host=192.168.1.63 port=5000" % (fitw, fith, scrw, scrh)
+            output = " avidemux ! mpeg4videoparse ! %s ! videoscale method=0 add-borders=false ! video/x-raw,width=%s,height=%s !\
+             videobox autocrop=true ! \"video/x-raw, width=%s, height=%s\" ! %s" \
+                     % (cfg.gst['decoder'], fitw, fith, scrw, scrh, args.output)
+            cmdstr = "gst-launch-1.0 filesrc location=\"%s/%s\" ! %s" % (args.input, avi, output)
             run_cli(cmdstr)
 
     return
@@ -168,15 +172,12 @@ def run_converter(args):
 
 def main():
 
-    inputflags = "./"
-    outputflags = "x264enc ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.1.64 port=5000"
-    convertflags = ""
-    playflags = "avi"
+    # default values come from config file
 
     parser = argparse.ArgumentParser(description='Akikos automated anim gif streamer.')
-    parser.add_argument('-i', '--input', type=str, default=inputflags, help='source folder to scan for *.gif files to process')
-    parser.add_argument('-o', '--output', type=str, default=outputflags, help='you can put fbdevsink or fakesink or filesink location="somepath"')
     parser.add_argument('-c', '--convert', action="store_true", help='take all animgifs from -i and create avis in -o folder; uses ffmpeg')
+    parser.add_argument('-i', '--input', type=str, default=cfg.gst['input'], help='source folder to scan for *.gif files')
+    parser.add_argument('-o', '--output', type=str, default=cfg.gst['output'], help='in case of --play avi this will be the gstreamer pipe sink, e.g. autovideosink')
     parser.add_argument('-p', '--play', type=str, default='', help='if set to slideshow: convert each gif to frames, then show frames as slideshow, then delete frames; else if avi play them using avi (mp4) shuffler')
     args = parser.parse_args()
 
