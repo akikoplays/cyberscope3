@@ -5,6 +5,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import urlparse
 import threading
 import subprocess
+import os
+import signal
 from config import cfg
 
 
@@ -15,13 +17,18 @@ def run_cli(cmdstr, sync):
     global proc
     print "Running CLI: ", cmdstr
     ret = []
-    proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
     for line in proc.stdout:
         print line
         ret.append(line)
 
     print 'Waiting for proc to finish'
-    proc.wait()
+    # proc.wait()
+    while proc.poll() is None:
+        print("Still working...")
+        # sleep a while
+
+
     if proc.returncode != 0:
         print "Error: processor failed, ret code = ", proc.returncode
         exit(1)
@@ -33,7 +40,8 @@ def run_cli(cmdstr, sync):
 def kill_proc(p):
     print 'Killing process ', p
     if p:
-        p.terminate()
+        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+        # p.terminate()
 
 
 def stop_player_thread():
