@@ -163,8 +163,9 @@ def run_converter(args):
     print "-- converting them to avis to be stored in: %s" % args.output
     gifs = collect_files_of_type(args.input, "gif")
 
+    run_cli('mkdir %s' % args.output)
     for gif in gifs:
-        cmd = "ffmpeg -i %s/%s %s/%s.avi" % (args.input, gif, args.output, gif)
+        cmd = "ffmpeg -y -i %s/%s %s/%s.avi" % (args.input, gif, args.output, gif)
         run_cli(cmd)
 
     return
