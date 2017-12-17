@@ -114,11 +114,12 @@ def run_slide_show(args):
 def run_avi_shuffler(args):
 
     print "Starting avi shuffle player"
-    print "-- reading animgifs from: %s" % args.input
-    print "-- converting them to avis to be stored in: %s" % args.output
+    print "-- reading avi files from: %s" % args.input
 
     avis = collect_files_of_type(args.input, "avi")
     scrw, scrh = get_screen_resolution()
+
+    print "-- streaming them to : %s" % args.output
 
     while True:
         for avi in avis:
@@ -175,13 +176,16 @@ def main():
     # default values come from config file
 
     parser = argparse.ArgumentParser(description='Akikos automated anim gif streamer.')
-    parser.add_argument('-c', '--convert', action="store_true", help='take all animgifs from -i and create avis in -o folder; uses ffmpeg')
+    parser.add_argument('-c', '--convert', help='take all animgifs from -i and create avis in -o folder; uses ffmpeg')
     parser.add_argument('-i', '--input', type=str, default=cfg.gst['input'], help='source folder to scan for *.gif files')
     parser.add_argument('-o', '--output', type=str, default=cfg.gst['output'], help='in case of --play avi this will be the gstreamer pipe sink, e.g. autovideosink')
     parser.add_argument('-p', '--play', type=str, default='', help='if set to slideshow: convert each gif to frames, then show frames as slideshow, then delete frames; else if avi play them using avi (mp4) shuffler')
     args = parser.parse_args()
 
     print args
+
+    if args.convert is not None:
+        print "Convert set!"
 
     if args.play == 'slideshow':
         run_slide_show(args)
