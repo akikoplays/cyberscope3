@@ -34,3 +34,10 @@ gst = { 'input' : './avis',
         'screen' : [656,512],
         'decoder' : 'omxmpeg4videodec'
         }
+
+cfg = { # in case you want to use gst-launch binary this is the cmd line for streaming
+        'stream_cmd' : 'python ./streamer.py ',
+        # Server listenes at this port
+        'port' : 8010,
+        'end' : True
+        }

@@ -2,11 +2,10 @@
 
 import os
 import os.path
-import sys
 import subprocess
 import argparse
-# from PIL import Image
 import config as cfg
+
 
 
 '''
