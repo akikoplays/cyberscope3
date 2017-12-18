@@ -13,7 +13,7 @@ from config import cfg
 proc = None
 player_thr = None
 
-def run_cli(cmdstr, sync):
+def run_cli(cmdstr, sync=None):
     global proc
     print "Running CLI: ", cmdstr
     ret = []
