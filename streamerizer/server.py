@@ -113,6 +113,12 @@ class S(BaseHTTPRequestHandler):
                 self.wfile.write('Output: %s<br/>' % output)
                 run_cli('%s -c all -i %s -o %s' % (cfg['stream_cmd'], input, output), None)
                 self.wfile.write('Done :)<br/>')
+            elif s == 'reboot':
+                self.wfile.write('Rebooting')
+                run_cli('sudo shutdown -r 0')
+            elif s == 'shutdown':
+                self.wfile.write('Shutting down')
+                run_cli('sudo shutdown -p 0')
             else:
                 print 'Unknown act: %s' % (s)
                 self.wfile.write('Unknown action requested :/ <br/>')
