@@ -111,7 +111,7 @@ class S(BaseHTTPRequestHandler):
             elif s == 'hello':
                 self._print('Hello World :) !')
             elif s == 'listconnections':
-                ret = run_cli('nmcli -c')
+                ret = run_cli('nmcli c')
                 for line in ret:
                     self._print('%s' % line)
             elif s == 'listssids':
