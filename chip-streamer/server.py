@@ -56,10 +56,22 @@ def kill_proc(p):
 
 
 class S(BaseHTTPRequestHandler):
+
+    def _print(self, s):
+        self.wfile.write('%s</br>' % s)
+        print '%s' % s
+
+
     def _set_headers(self, code):
         self.send_response(code)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
+
+
+    def get_param(self, params_dict, name):
+        if not name in params_dict:
+            return None
+        return params_dict[name]
 
 
     def do_GET(self):
@@ -79,27 +91,45 @@ class S(BaseHTTPRequestHandler):
         # for easier manipulation, convert to dictionary
         d = dict(params)
 
+        self._set_headers(code)
+        self._print("<html><body>")
+
         # main command parser
         s = 'n/a'
         if 'act' in d:
             s = d['act']
             print 'ACT: ', s
-            if s == 'stream':
-                print 'Stream test video stream to localhost'
+            if s == 'play':
+                self._print('Stream test video stream to localhost')
                 # run_cli(cfg['stream_cmd'])
                 gst_thr = threading.Thread(target=run_cli, args=(cfg['stream_cmd'], None))
                 gst_thr.start()
             elif s == 'stop':
+                self._print('Stopping stream')
                 gst_thr.join
                 kill_proc(proc)
             elif s == 'hello':
-                print 'Hello!'
+                self._print('Hello World :) !')
+            elif s == 'listconnections':
+                ret = run_cli('nmcli -c')
+                self._print('<pre>%s</pre>' % ret)
+            elif s == 'listssids':
+                ret = run_cli('nmcli device wifi list')
+                self._print('<pre>%s</pre>' % ret)
+            elif s == 'addssid':
+                self._print('Adding SSID to the auto-connect list')
+                ssid = self.get_param(d, 'ssid')
+                psk = self.get_param(d, 'psk')
+                self._print('SSID: %s' % (ssid, psk))
+                self._print('PSK: %s' % (ssid, psk))
+                ret = run_cli('nmcli device wifi connect \'%s\' password \'%s\' ifname wlan0' % (ssid, psk))
+                self._print('<pre>%s</pre>' % ret)
             else:
-                print 'Unknown act: %s' % (s)
+                self._print('Unknown act: %s' % (s))
                 code = 404
 
-        self._set_headers(code)
-        self.wfile.write("<html><body><h1>Command: %s, Error code: %s</h1></body></html>" % (s, code))
+        # self.wfile.write("<html><body><h1>Command: %s, Error code: %s</h1></body></html>" % (s, code))
+        self.wfile.write("</body></html>")
 
 
     def do_HEAD(self):
