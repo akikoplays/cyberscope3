@@ -30,7 +30,7 @@ from config import cfg
 proc = None
 gst_thr = None
 
-def run_cli(cmdstr, sync):
+def run_cli(cmdstr):
     global proc
     print "Running CLI: ", cmdstr
     ret = []
@@ -102,7 +102,7 @@ class S(BaseHTTPRequestHandler):
             if s == 'play':
                 self._print('Stream test video stream to localhost')
                 # run_cli(cfg['stream_cmd'])
-                gst_thr = threading.Thread(target=run_cli, args=(cfg['stream_cmd'], None))
+                gst_thr = threading.Thread(target=run_cli, args=(cfg['stream_cmd']))
                 gst_thr.start()
             elif s == 'stop':
                 self._print('Stopping stream')
@@ -112,10 +112,12 @@ class S(BaseHTTPRequestHandler):
                 self._print('Hello World :) !')
             elif s == 'listconnections':
                 ret = run_cli('nmcli -c')
-                self._print('<pre>%s</pre>' % ret)
+                for line in ret:
+                    self._print('%s' % line)
             elif s == 'listssids':
                 ret = run_cli('nmcli device wifi list')
-                self._print('<pre>%s</pre>' % ret)
+                for line in ret:
+                    self._print('%s' % line)
             elif s == 'addssid':
                 self._print('Adding SSID to the auto-connect list')
                 ssid = self.get_param(d, 'ssid')
@@ -123,7 +125,8 @@ class S(BaseHTTPRequestHandler):
                 self._print('SSID: %s' % (ssid, psk))
                 self._print('PSK: %s' % (ssid, psk))
                 ret = run_cli('nmcli device wifi connect \'%s\' password \'%s\' ifname wlan0' % (ssid, psk))
-                self._print('<pre>%s</pre>' % ret)
+                for line in ret:
+                    self._print('%s' % line)
             else:
                 self._print('Unknown act: %s' % (s))
                 code = 404
