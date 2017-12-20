@@ -1,0 +1,26 @@
+# /etc/systemd/system/stream-listener.service 
+
+[Unit]
+# By default 'simple' is used, see also https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=
+#Type=simple|forking|oneshot|dbus|notify|idle
+Description=Run Streamerizer on sys startup. This service invokes a script that runs gstreamer listener, server.py and sends a HTTP GET request to server.py to start playing avis.
+## make sure we only start the service after network is up
+#After=network.target
+
+[Service]
+Type=simple
+## here we can set custom environment variables
+Environment=AUTOSSH_GATETIME=0
+#Environment=AUTOSSH_PORT=0
+ExecStart=/usr/bin/gst-launch-1.0  -v udpsrc port=5000 caps="application/x-rtp, encoding-name=JPEG, payload=26" ! rtpjpegdepay ! jpegdec ! videoconvert ! fbdevsink
+ExecStop=/usr/bin/pkill -9 gst-launch-1.0
+# don't use 'nobody' if your script needs to access user files
+# (if User is not set the service will run as root)
+#User=nobody
+
+# Useful during debugging; remove it once the service is working
+StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target
+
