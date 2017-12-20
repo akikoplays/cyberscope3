@@ -4,10 +4,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import urlparse
 import threading
-import subprocess
-import os
 import sys
-import signal
 from config import cfg
 sys.path.insert(0, '../python-aux')
 import cli
@@ -17,45 +14,9 @@ proc = None
 player_thr = None
 q = Queue.Queue()
 
-# def run_command(command):
-#     # trim the newline
-#     command = command.rstrip()
-#     # run the command and get the output back
-#     try:
-#         output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell = True)
-#     except:
-#         output = "Failed to execute command.\r\n"
-#     # send the output back to the client
-#     return output
-
-# def run_cli_async(cmdstr):
-#     global proc
-#     print "Running CLI: ", cmdstr
-#
-#     try:
-#         proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
-#     except OSError as e:
-#         print "-- OSError > ", e.errno
-#         print "-- OSError > ", e.strerror
-#         print "-- OSError > ", e.filename
-#     except:
-#         print '-- exception: ' + sys.exc_info()[0]
-#
-#
-#     print '-- return code: %s' % proc.returncode
-#     return proc.returncode
-#
-#
-# def kill_proc(p):
-#     print 'Killing process ', p
-#     if p:
-#         os.killpg(os.getpgid(p.pid), signal.SIGTERM)
-#         # p.terminate()
-
 
 def stop_player_thread():
     global player_thr
-    global q
     player_thr.join()
     player_thr = None
 
