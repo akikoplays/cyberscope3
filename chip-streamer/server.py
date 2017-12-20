@@ -27,6 +27,12 @@ import argparse
 import threading
 from config import cfg 
 
+
+# TODO:
+# switch to import python-aux/cli.py for run_cli kill_process etc.
+
+
+
 proc = None
 gst_thr = None
 

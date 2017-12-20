@@ -6,48 +6,56 @@ import urlparse
 import threading
 import subprocess
 import os
+import sys
 import signal
 from config import cfg
-
+sys.path.insert(0, '../python-aux')
+import cli
+import Queue
 
 proc = None
 player_thr = None
+q = Queue.Queue()
 
-def run_cli(cmdstr, sync=None):
-    global proc
-    print "Running CLI: ", cmdstr
-    ret = []
-    proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
-    for line in proc.stdout:
-        print line
-        ret.append(line)
+# def run_command(command):
+#     # trim the newline
+#     command = command.rstrip()
+#     # run the command and get the output back
+#     try:
+#         output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell = True)
+#     except:
+#         output = "Failed to execute command.\r\n"
+#     # send the output back to the client
+#     return output
 
-    print 'Waiting for proc to finish'
-    # proc.wait()
-    while proc.poll() is None:
-        print("Still working...")
-        # sleep a while
-
-
-    if proc.returncode != 0:
-        print "Error: processor failed, ret code = ", proc.returncode
-        exit(1)
-
-    print 'Returning from CLI'
-    return proc.returncode, ret
-
-
-def kill_proc(p):
-    print 'Killing process ', p
-    if p:
-        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
-        # p.terminate()
+# def run_cli_async(cmdstr):
+#     global proc
+#     print "Running CLI: ", cmdstr
+#
+#     try:
+#         proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
+#     except OSError as e:
+#         print "-- OSError > ", e.errno
+#         print "-- OSError > ", e.strerror
+#         print "-- OSError > ", e.filename
+#     except:
+#         print '-- exception: ' + sys.exc_info()[0]
+#
+#
+#     print '-- return code: %s' % proc.returncode
+#     return proc.returncode
+#
+#
+# def kill_proc(p):
+#     print 'Killing process ', p
+#     if p:
+#         os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+#         # p.terminate()
 
 
 def stop_player_thread():
-    global proc
     global player_thr
-    kill_proc(proc)
+    global q
     player_thr.join()
     player_thr = None
 
@@ -61,6 +69,7 @@ class S(BaseHTTPRequestHandler):
     def do_GET(self):
         global proc
         global player_thr
+        global q
 
         code = 200
         qs = {}
@@ -86,19 +95,30 @@ class S(BaseHTTPRequestHandler):
             self.wfile.write('Command received: %s<br/>' % s)
             print 'Command received: ', s
             if s == 'play':
-                if player_thr != None:
+                if player_thr is not None:
+                    print 'Stopping player thread'
                     stop_player_thread()
+                    if not q.empty():
+                        print 'Killing process'
+                        cli.kill_process(q.get())
+                    else:
+                        print 'Can\'t kill process, queue is empty'
 
                 print 'Start playing avis'
                 self.wfile.write('Start playing avis <br/>')
                 input = d['input'] if 'input' in d else 'avis'
                 cmd = cfg['stream_cmd'] + ' -i ' + input
-                player_thr = threading.Thread(target=run_cli, args=(cmd, None))
+                player_thr = threading.Thread(target=cli.run_cli_async, args=(cmd, q))
                 player_thr.start()
             elif s == 'stop':
-                if player_thr != None:
+                if player_thr is not None:
                     self.wfile.write('Stopping player thread<br/>')
                     stop_player_thread()
+                    if not q.empty():
+                        print 'Killing process'
+                        cli.kill_process(q.get())
+                    else:
+                        print 'Can\'t kill process, queue is empty'
                 else:
                     self.wfile.write('Nothing to stop<br/>')
             elif s == 'hello':
@@ -111,14 +131,14 @@ class S(BaseHTTPRequestHandler):
                 self.wfile.write('Converting anim gifs to avis.. please wait this may take a while<br/>')
                 self.wfile.write('Input: %s<br/>' % input)
                 self.wfile.write('Output: %s<br/>' % output)
-                run_cli('%s -c all -i %s -o %s' % (cfg['stream_cmd'], input, output), None)
+                cli.run_cli_async('%s -c all -i %s -o %s' % (cfg['stream_cmd'], input, output))
                 self.wfile.write('Done :)<br/>')
             elif s == 'reboot':
                 self.wfile.write('Rebooting')
-                run_cli('sudo shutdown -r 0')
+                cli.run_cli_async('sudo shutdown -r 0')
             elif s == 'shutdown':
                 self.wfile.write('Shutting down')
-                run_cli('sudo shutdown -p 0')
+                cli.run_cli_async('sudo shutdown -p 0')
             else:
                 print 'Unknown act: %s' % (s)
                 self.wfile.write('Unknown action requested :/ <br/>')
@@ -128,7 +148,7 @@ class S(BaseHTTPRequestHandler):
         self.wfile.write('</body></html>')
 
 
-    def do_HEAD(self):
+    def do_head(self):
         self._set_headers()
 
 
