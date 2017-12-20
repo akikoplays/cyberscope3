@@ -99,7 +99,7 @@ class S(BaseHTTPRequestHandler):
                 cli.run_cli_async('sudo shutdown -r 0')
             elif s == 'shutdown':
                 self.wfile.write('Shutting down')
-                cli.run_cli_async('sudo shutdown -p 0')
+                cli.run_cli_async('sudo shutdown 0')
             else:
                 print 'Unknown act: %s' % (s)
                 self.wfile.write('Unknown action requested :/ <br/>')
