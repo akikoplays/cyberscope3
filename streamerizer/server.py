@@ -123,7 +123,11 @@ class S(BaseHTTPRequestHandler):
                 if (player_thr is not None) and player_thr.isAlive():
                     self.stop_stream()
                 # Start new stream
-                player_thr = VideoThread(kwargs={'cmd': cfg['stream_cmd']})
+                cli = cfg['stream_cmd']
+                if 'input' in d:
+                    cli = "%s -i %s " % cli, d['input']
+                self._print('CLI: %s' % cli)
+                player_thr = VideoThread(kwargs={'cmd': cli})
                 player_thr.start()
             elif s == 'stop':
                 self._print('Stopping stream')
