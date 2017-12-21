@@ -127,7 +127,7 @@ class S(BaseHTTPRequestHandler):
                 # Start new stream
                 cli = cfg['stream_cmd']
                 if 'input' in d:
-                    cli = "%s -i %s " % cli, d['input']
+                    cli = "%s -i %s " % (cli, d['input'])
                 self._print('CLI: %s' % cli)
                 player_thr = VideoThread(kwargs={'cmd': cli})
                 player_thr.start()
