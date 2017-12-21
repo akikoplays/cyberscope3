@@ -9,11 +9,8 @@ import sys
 from config import cfg
 sys.path.insert(0, '../python-aux')
 import cli
-import Queue
 
-# proc = None
 player_thr = None
-# q = Queue.Queue()
 
 import time
 import logging
@@ -56,11 +53,6 @@ class VideoThread(threading.Thread):
     def get_gst_process(self):
         return self.proc
 
-# def stop_player_thread():
-#     global player_thr
-#     player_thr.join()
-#     player_thr = None
-
 
 class S(BaseHTTPRequestHandler):
     def _set_headers(self, code):
@@ -94,22 +86,20 @@ class S(BaseHTTPRequestHandler):
                     cli.kill_process(player_thr.get_gst_process())
                     self._print('gst process killed')
                 except OSError as e:
-                    print "-- OSError > ", e.errno
-                    print "-- OSError > ", e.strerror
-                    print "-- OSError > ", e.filename
+                    self._print("-- OSError > %s " % e.errno)
+                    self._print("-- OSError > %s " % e.strerror)
+                    self._print("-- OSError > %s " % e.filename)
             else:
                 self._print('gst process was not found, nothing to kill')
 
     def do_GET(self):
-        # global proc
         global player_thr
-        # global q
 
         code = 200
         qs = {}
         path = self.path
         params = {}
-        print path
+        logging.debug(path)
         if '?' in path:
             path, tmp = path.split('?', 1)
             params = urlparse.parse_qsl(tmp)
@@ -119,15 +109,12 @@ class S(BaseHTTPRequestHandler):
         d = dict(params)
 
         # main command parser
-        s = 'n/a'
-
         self._set_headers(code)
-        self.wfile.write('<html><body>')
+        self._print('<html><body>')
 
         if 'act' in d:
             s = d['act']
-            self.wfile.write('Command received: %s<br/>' % s)
-            print 'Command received: ', s
+            self._print('Command received: %s<br/>' % s)
             if s == 'play':
                 # Kill stream if running
                 if (player_thr is not None) and player_thr.isAlive():
@@ -140,39 +127,38 @@ class S(BaseHTTPRequestHandler):
                 self.stop_stream()
             elif s == 'hello':
                 print 'Hello world :) !'
-                self.wfile.write('Hello World :)<br/>')
+                self._print('Hello World :)<br/>')
             elif s == 'convert':
                 input = d['input'] if 'input' in d else 'animgifs'
                 output = d['output'] if 'output' in d else 'avis'
                 print 'Convert animgifs to avis'
-                self.wfile.write('Converting anim gifs to avis.. please wait this may take a while<br/>')
-                self.wfile.write('Input: %s<br/>' % input)
-                self.wfile.write('Output: %s<br/>' % output)
+                self._print('Converting anim gifs to avis.. please wait this may take a while<br/>')
+                self._print('Input: %s<br/>' % input)
+                self._print('Output: %s<br/>' % output)
                 cli.run_cli_async('%s -c all -i %s -o %s' % (cfg['stream_cmd'], input, output))
-                self.wfile.write('Done :)<br/>')
+                self._print('Done :)<br/>')
             elif s == 'reboot':
-                self.wfile.write('Rebooting')
+                self._print('Rebooting')
                 cli.run_cli_async('sudo shutdown -r 0')
             elif s == 'shutdown':
-                self.wfile.write('Shutting down')
+                self._print('Shutting down')
                 cli.run_cli_async('sudo shutdown 0')
             else:
                 print 'Unknown action: %s' % (s)
-                self.wfile.write('Unknown action requested :/ <br/>')
+                self._print('Unknown action requested :/ <br/>')
                 code = 404
-        # self.wfile.write("<html><body><h1>Command: %s, Error code: %s</h1></body></html>" % (s, code))
 
-        self.wfile.write('</body></html>')
+        self._print('</body></html>')
 
 
-    def do_head(self):
+    def do_HEAD(self):
         self._set_headers()
 
 
 def run(server_class=HTTPServer, handler_class=S, port=cfg['port']):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print 'Starting httpd...'
+    logging.info('Starting httpd...')
     httpd.serve_forever()
 
 
