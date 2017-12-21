@@ -4,21 +4,62 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import urlparse
 import threading
+from threading import Lock
 import sys
 from config import cfg
 sys.path.insert(0, '../python-aux')
 import cli
 import Queue
 
-proc = None
+# proc = None
 player_thr = None
-q = Queue.Queue()
+# q = Queue.Queue()
+
+import time
+import logging
+logging.basicConfig(filename=None, level=logging.DEBUG)
 
 
-def stop_player_thread():
-    global player_thr
-    player_thr.join()
-    player_thr = None
+class VideoThread(threading.Thread):
+
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs=None, verbose=None):
+        super(VideoThread, self).__init__(group=group, target=target,
+                                       name=name, verbose=verbose)
+        self.args = args
+        self.kwargs = kwargs
+        self.proc = None
+        self.stopFlag = False
+        self.mutex = Lock()
+        return
+
+    def run(self):
+        logging.debug('vt: running with %s and %s', self.args, self.kwargs)
+        logging.debug('vt: starting cli %s', self.kwargs['cmd'])
+
+        self.proc = cli.run_cli_async(self.kwargs['cmd'])
+        while self.proc.poll() is None:
+            self.mutex.acquire()
+            try:
+                if self.stopFlag is True:
+                    break
+            finally:
+                self.mutex.release()
+
+            time.sleep(0.01)
+
+        logging.debug('vt: cli finished: %s ', self.kwargs['cmd'])
+        pass
+
+    def stop_stream(self):
+        self.stopFlag=True
+    def get_gst_process(self):
+        return self.proc
+
+# def stop_player_thread():
+#     global player_thr
+#     player_thr.join()
+#     player_thr = None
 
 
 class S(BaseHTTPRequestHandler):
@@ -27,10 +68,42 @@ class S(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-    def do_GET(self):
-        global proc
+    def _print(self, s):
+        self.wfile.write('%s</br>' % s)
+        logging.debug('%s' % s)
+
+    def stop_stream(self):
         global player_thr
-        global q
+        if player_thr is not None:
+            # First join thread if necessary
+            try:
+                if player_thr.isAlive():
+                    player_thr.stop_stream()
+                    player_thr.join()
+                    self._print('gst thread joined')
+                else:
+                    self._print('gst thread was not alive, nothing to join')
+            except:
+                self._print('gst thread not initialized')
+                pass
+
+            # Now, kill the gst process
+            if player_thr.get_gst_process() is not None:
+
+                try:
+                    cli.kill_process(player_thr.get_gst_process())
+                    self._print('gst process killed')
+                except OSError as e:
+                    print "-- OSError > ", e.errno
+                    print "-- OSError > ", e.strerror
+                    print "-- OSError > ", e.filename
+            else:
+                self._print('gst process was not found, nothing to kill')
+
+    def do_GET(self):
+        # global proc
+        global player_thr
+        # global q
 
         code = 200
         qs = {}
@@ -56,32 +129,15 @@ class S(BaseHTTPRequestHandler):
             self.wfile.write('Command received: %s<br/>' % s)
             print 'Command received: ', s
             if s == 'play':
-                if player_thr is not None:
-                    print 'Stopping player thread'
-                    stop_player_thread()
-                    if not q.empty():
-                        print 'Killing process'
-                        cli.kill_process(q.get())
-                    else:
-                        print 'Can\'t kill process, queue is empty'
-
-                print 'Start playing avis'
-                self.wfile.write('Start playing avis <br/>')
-                input = d['input'] if 'input' in d else 'avis'
-                cmd = cfg['stream_cmd'] + ' -i ' + input
-                player_thr = threading.Thread(target=cli.run_cli_async, args=(cmd, q))
+                # Kill stream if running
+                if (player_thr is not None) and player_thr.isAlive():
+                    self.stop_stream()
+                # Start new stream
+                player_thr = VideoThread(kwargs={'cmd': cfg['stream_cmd']})
                 player_thr.start()
             elif s == 'stop':
-                if player_thr is not None:
-                    self.wfile.write('Stopping player thread<br/>')
-                    stop_player_thread()
-                    if not q.empty():
-                        print 'Killing process'
-                        cli.kill_process(q.get())
-                    else:
-                        print 'Can\'t kill process, queue is empty'
-                else:
-                    self.wfile.write('Nothing to stop<br/>')
+                self._print('Stopping stream')
+                self.stop_stream()
             elif s == 'hello':
                 print 'Hello world :) !'
                 self.wfile.write('Hello World :)<br/>')
@@ -101,7 +157,7 @@ class S(BaseHTTPRequestHandler):
                 self.wfile.write('Shutting down')
                 cli.run_cli_async('sudo shutdown 0')
             else:
-                print 'Unknown act: %s' % (s)
+                print 'Unknown action: %s' % (s)
                 self.wfile.write('Unknown action requested :/ <br/>')
                 code = 404
         # self.wfile.write("<html><body><h1>Command: %s, Error code: %s</h1></body></html>" % (s, code))
