@@ -14,7 +14,7 @@ player_thr = None
 
 import time
 import logging
-logging.basicConfig(filename=None, level=logging.DEBUG)
+logging.basicConfig(filename="/home/pi/cyberscope3/streamerizer/server.log", level=logging.DEBUG)
 
 
 class VideoThread(threading.Thread):
