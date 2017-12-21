@@ -35,6 +35,9 @@ class VideoThread(threading.Thread):
         logging.debug('vt: starting cli %s', self.kwargs['cmd'])
 
         self.proc = cli.run_cli_async(self.kwargs['cmd'])
+        for line in self.proc.stdout:
+            logging.debug(line)
+
         while self.proc.poll() is None:
             self.mutex.acquire()
             try:
