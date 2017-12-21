@@ -3,7 +3,7 @@ author: boris posavec
 
 # What is this
 
-Because scanzv2 was very belated, i had to resort to all kinds of tricks in order to prepare some basic functionality for the upcoming product. At some point we decided to use gstreamer for the realtime video feed from the device. I checked and iOS had supporting framework for that. gstreamer1 seems to be a lot better than gstreamer-0.1 which was used in Jasmine (MYS02) back in the days.
+Because sz2 was very belated, i had to resort to all kinds of tricks in order to prepare some basic functionality for the upcoming product. At some point we decided to use gstreamer for the realtime video feed from the device. I checked and iOS had supporting framework for that. gstreamer1 seems to be a lot better than gstreamer-0.1 which was used in Jasmine (MYS02) back in the days.
 
 This project is about setting up CHIP to stream video test signal over the network to a recipient (another gstreamer listening on a specific port).
 It covers how to prepare CHIP for gstreamer as well as how to develop python script for that, and on recipient' side how to enable video player for the incoming signal.

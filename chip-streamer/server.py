@@ -1,71 +1,67 @@
 #!/usr/bin/env python
-"""
-Very simple HTTP server in python.
-
-Usage::
-    ./dummy-web-server.py [<port>]
-
-Send a GET request::
-    curl http://localhost
-
-Send a HEAD request::
-    curl -I http://localhost
-
-Send a POST request::
-    curl -d "foo=bar&bin=baz" http://localhost
-
-"""
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import SocketServer
 import urlparse
-import os
-import os.path
 import sys
-import subprocess
-import argparse
 import threading
-from config import cfg 
+from threading import Lock
+import time
+from config import cfg
+
+# akiko's helper fns
+sys.path.insert(0, '../python-aux')
+import cli
+
+import logging
+logging.basicConfig(filename=None, level=logging.DEBUG)
 
 
-# TODO:
-# switch to import python-aux/cli.py for run_cli kill_process etc.
+class VideoThread(threading.Thread):
+
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs=None, verbose=None):
+        super(VideoThread, self).__init__(group=group, target=target,
+                                       name=name, verbose=verbose)
+        self.args = args
+        self.kwargs = kwargs
+        self.proc = None
+        self.stopFlag = False
+        self.mutex = Lock()
+        return
+
+    def run(self):
+        logging.debug('vt: running with %s and %s', self.args, self.kwargs)
+        logging.debug('vt: starting cli %s', self.kwargs['cmd'])
+
+        self.proc = cli.run_cli_async(self.kwargs['cmd'])
+        while self.proc.poll() is None:
+            self.mutex.acquire()
+            try:
+                if self.stopFlag is True:
+                    break
+            finally:
+                self.mutex.release()
+
+            time.sleep(0.01)
+
+        logging.debug('vt: cli finished: %s ', self.kwargs['cmd'])
+        pass
+
+    def stop_stream(self):
+        self.stopFlag=True
+    def get_gst_process(self):
+        return self.proc
 
 
-
-proc = None
-gst_thr = None
-
-def run_cli(cmdstr):
-    global proc
-    print "Running CLI: ", cmdstr
-    ret = []
-    proc = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE)
-    for line in proc.stdout:
-        print line
-        ret.append(line)
-
-    print 'Waiting for proc to finish'
-    proc.wait()
-    if proc.returncode != 0:
-        print "Error: processor failed, ret code = ", proc.returncode
-        exit(1)
-
-    print 'Returning from CLI'
-    return proc.returncode, ret
-
-
-def kill_proc(p):
-    print 'Killing process ', p
-    if p:
-        p.terminate()
+# Global vars
+gst_thr = None  # gstreamer thread
 
 
 class S(BaseHTTPRequestHandler):
 
     def _print(self, s):
         self.wfile.write('%s</br>' % s)
-        print '%s' % s
+        logging.debug('%s' % s)
 
 
     def _set_headers(self, code):
@@ -81,18 +77,18 @@ class S(BaseHTTPRequestHandler):
 
 
     def do_GET(self):
-        global proc
         global gst_thr
+        global q
 
         code = 200
         qs = {}
         path = self.path
         params = {}
-        print path
+        logging.debug(path)
         if '?' in path:
             path, tmp = path.split('?', 1)
             params = urlparse.parse_qsl(tmp)
-        print path, qs
+        logging.debug('%s, %s' % (path, qs))
 
         # for easier manipulation, convert to dictionary
         d = dict(params)
@@ -104,24 +100,51 @@ class S(BaseHTTPRequestHandler):
         s = 'n/a'
         if 'act' in d:
             s = d['act']
-            print 'ACT: ', s
+            logging.debug('action: %s', s)
             if s == 'play':
+
+                # todo:
+                # don't play video if video already playing, return error instead
+
                 self._print('Stream test video stream to localhost')
-                # run_cli(cfg['stream_cmd'])
-                gst_thr = threading.Thread(target=run_cli, args=(cfg['stream_cmd']))
+                gst_thr = VideoThread(kwargs={'cmd':cfg['stream_cmd']})
                 gst_thr.start()
             elif s == 'stop':
                 self._print('Stopping stream')
-                gst_thr.join
-                kill_proc(proc)
+
+                if gst_thr is not None:
+                    # First join thread if necessary
+                    try:
+                        if gst_thr.isAlive():
+                            gst_thr.stop_stream()
+                            gst_thr.join()
+                            self._print('gst thread joined')
+                        else:
+                            self._print('gst thread was not alive, nothing to join')
+                    except:
+                        self._print('gst thread not initialized')
+                        pass
+
+                    # Now, kill the gst process
+                    if gst_thr.get_gst_process() is not None:
+
+                        try:
+                            cli.kill_process(gst_thr.get_gst_process())
+                            self._print('gst process killed')
+                        except OSError as e:
+                            print "-- OSError > ", e.errno
+                            print "-- OSError > ", e.strerror
+                            print "-- OSError > ", e.filename
+                    else:
+                        self._print('gst process was not found, nothing to kill')
             elif s == 'hello':
                 self._print('Hello World :) !')
             elif s == 'listconnections':
-                ret = run_cli('nmcli c')
+                ret = cli.run_cli_sync('nmcli c')
                 for line in ret:
                     self._print('%s' % line)
             elif s == 'listssids':
-                ret = run_cli('nmcli device wifi list')
+                ret = cli.run_cli_sync('nmcli device wifi list')
                 for line in ret:
                     self._print('%s' % line)
             elif s == 'addssid':
@@ -130,14 +153,12 @@ class S(BaseHTTPRequestHandler):
                 psk = self.get_param(d, 'psk')
                 self._print('SSID: %s' % (ssid, psk))
                 self._print('PSK: %s' % (ssid, psk))
-                ret = run_cli('nmcli device wifi connect \'%s\' password \'%s\' ifname wlan0' % (ssid, psk))
+                ret = cli.run_cli_sync('nmcli device wifi connect \'%s\' password \'%s\' ifname wlan0' % (ssid, psk))
                 for line in ret:
                     self._print('%s' % line)
             else:
                 self._print('Unknown act: %s' % (s))
-                code = 404
 
-        # self.wfile.write("<html><body><h1>Command: %s, Error code: %s</h1></body></html>" % (s, code))
         self.wfile.write("</body></html>")
 
 
@@ -156,8 +177,9 @@ class S(BaseHTTPRequestHandler):
 def run(server_class=HTTPServer, handler_class=S, port=cfg['port']):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print 'Starting httpd...'
+    logging.info('Starting httpd on port %s' % port)
     httpd.serve_forever()
+
 
 if __name__ == "__main__":
     from sys import argv
