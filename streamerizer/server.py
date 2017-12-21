@@ -14,7 +14,7 @@ player_thr = None
 
 import time
 import logging
-logging.basicConfig(filename="/home/pi/cyberscope3/streamerizer/server.log", level=logging.DEBUG)
+logging.basicConfig(filename=None, level=logging.DEBUG)
 
 
 class VideoThread(threading.Thread):
@@ -35,8 +35,10 @@ class VideoThread(threading.Thread):
         logging.debug('vt: starting cli %s', self.kwargs['cmd'])
 
         self.proc = cli.run_cli_async(self.kwargs['cmd'])
-        for line in self.proc.stdout:
-            logging.debug(line)
+        # no no no - this will somehow keep the thread from progressing to the while loop below
+        # don't do it, or interleave it inside the while loop maybe..?
+        # for line in self.proc.stdout:
+        #     logging.debug(line)
 
         while self.proc.poll() is None:
             self.mutex.acquire()
