@@ -145,6 +145,7 @@ class S(BaseHTTPRequestHandler):
 
         # for easier manipulation, convert to dictionary
         d = dict(params)
+	logging.debug(d)
 
         # main command parser
         self._set_headers(code)
