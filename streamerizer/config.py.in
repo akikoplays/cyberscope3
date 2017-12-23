@@ -37,7 +37,8 @@ gst = { 'input' : './avis',
 
 cfg = { # in case you want to use gst-launch binary this is the cmd line for streaming
         'stream_cmd' : 'python ./streamer.py ',
-        'use_omx' : false
+        'use_omx' : False,
+        'logfile' : None, # set to some path if you want logging to file instead of stdout
         # Server listenes at this port
         'port' : 8010,
         'end' : True
