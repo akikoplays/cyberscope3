@@ -14,7 +14,7 @@ player_thr = None
 
 import time
 import logging
-logging.basicConfig(filename=None if cfg['logfile'] is None else cfg['logfile'], level=logging.DEBUG)
+logging.basicConfig(filename=None if cfg['logfile'] is None else cfg['logfile'], level=logging.DEBUG, filemode='w')
 
 
 class VideoThread(threading.Thread):
@@ -163,7 +163,6 @@ class S(BaseHTTPRequestHandler):
                     cmd = "%s -i %s " % (cmd, d['input'])
                 else:
                     d['input'] = 'avis'
-                self._print('CLI: %s' % cmd)
                 player_thr = VideoThread(kwargs={'cmd': cmd, 'use_omx': cfg['use_omx'], 'input': d['input']})
                 player_thr.start()
             elif s == 'stop':
