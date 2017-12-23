@@ -19,6 +19,8 @@ logging.basicConfig(filename=None, level=logging.DEBUG)
 
 class VideoThread(threading.Thread):
 
+    videos = []
+
     def __init__(self, group=None, target=None, name=None,
                  args=(), kwargs=None, verbose=None):
         super(VideoThread, self).__init__(group=group, target=target,
@@ -28,10 +30,17 @@ class VideoThread(threading.Thread):
         self.proc = None
         self.stopFlag = False
         self.mutex = Lock()
+
+        if self.kwargs['use_omx'] == True:
+            logging.info('vt: selecting omxplayer')
+            self.playback_fn = self.launch_omx_player
+        else:
+            logging.info('vt: selecting gst-launch player')
+            self.playback_fn = self.launch_gst_player
+
         return
 
-    def run(self):
-        logging.debug('vt: running with %s and %s', self.args, self.kwargs)
+    def launch_gst_player(self):
         logging.debug('vt: starting cli %s', self.kwargs['cmd'])
 
         self.proc = cli.run_cli_async(self.kwargs['cmd'])
@@ -51,6 +60,30 @@ class VideoThread(threading.Thread):
             time.sleep(0.01)
 
         logging.debug('vt: cli finished: %s ', self.kwargs['cmd'])
+        pass
+
+    def launch_omx_player(self):
+        logging.debug('vt: starting omxplayer loop')
+        self.videos = cli.collect_files_of_type(self.kwargs['input'], "avi")
+        i = 0
+
+        while self.stopFlag is False:
+            # clear framebuffer
+            # run omxplayer file
+            # check stop flag
+            cli.run_cli_sync('dd if=/dev/zero of=/dev/fb0')
+            cli.run_cli_sync('omxplayer %s/%s' % (self.kwargs['input'], self.videos[i]))
+
+            # todo: randomize video playback
+            i = i+1
+            if i >= len(self.videos):
+                i = 0
+
+        pass
+
+    def run(self):
+        logging.debug('vt: running with %s and %s', self.args, self.kwargs)
+        self.playback_fn()
         pass
 
     def stop_stream(self):
@@ -128,8 +161,10 @@ class S(BaseHTTPRequestHandler):
                 cli = cfg['stream_cmd']
                 if 'input' in d:
                     cli = "%s -i %s " % (cli, d['input'])
+                else:
+                    d['input'] = 'avis'
                 self._print('CLI: %s' % cli)
-                player_thr = VideoThread(kwargs={'cmd': cli})
+                player_thr = VideoThread(kwargs={'cmd': cli, 'use_omx': cfg['use_omx'], 'input': d['input']})
                 player_thr.start()
             elif s == 'stop':
                 self._print('Stopping stream')

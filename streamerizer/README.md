@@ -155,3 +155,16 @@ You can also do this manually, by logging in the RPI box, and then:
     ./streamer.py -c 1 -input ./animgif-cyberpunk -output ./avi-cyberpunk
     
 If the avi-cyberpunk folder doesn't exist, it will be created prior to the batch conversion process.
+
+
+## What did I learn from this project
+
+First thing, i wasn't able to get python gst to function. gst 1.0 bindings for python seem to be missing even after installing them on rpi via apt. 
+
+Next, I learned how to control processes from python, and how to launch them in a separate thread, plus how to control them via http server, also in python. The idea of being able to control the streamer application via browser was really sweet.
+
+Next, i managed to understand the intricacies of launching scripts via systemd services.. those absolute paths which were absolutely necessary when providing input params, as well as how to understand why a service has failed.
+
+Then, I figured out the differences between rpi and say OSX gst pipelines. E.g. when repacking avi to jpeg stream, on rpi it was necessary to explicitly give the format of the jpeg during videoconvert: videoconvert ! video/x-raw,format=I420 ! jpegenc ... on OSX this wasn't the case.
+
+Biggest issue I had, that made me switch to omxplayer on rpi, was that omxmpeg4videodec was causing dubious pipeline lock up. The next element in the pipe was unable to conitnue, as if nothing was fed to it. 
