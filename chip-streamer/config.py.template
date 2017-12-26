@@ -8,14 +8,18 @@ server.py includes this file in order to determin various things such as gstream
 '''
 
 cfg = { # in case you want to use gst-launch binary this is the cmd line for streaming
-        'stream_cmd' : 'gst-launch-1.0 videotestsrc ! jpegenc ! rtpjpegpay ! udpsink host="127.0.0.1" port=5000',
+        'stream_cmd': 'gst-launch-1.0 videotestsrc ! jpegenc ! rtpjpegpay ! udpsink host="127.0.0.1" port=5000',
+        # single snapshot cli command
+        'capture_cmd': 'gst-launch-1.0 videotestsrc num-buffers=1 ! video/x-raw,width=#width,height=#height ! jpegenc ! filesink location="#path"',
         # Set this to False if you want to use python embedded version of gst (gi), 
         # else gst-launch will be invoked as subprocess
-        'use_cmd' : True,
+        'use_cmd': True,
+        # where to store captured images (in case you are using server as systemd service, use absolute path here
+        'image_store_path': './images/',
         # Server listenes at this port
-        'port' : 8001,
+        'port': 8001,
         # Still TBD, but we will most probably support HTTPS
-        'https' : False,
-        'end' : True
+        'https': False,
+        'end': True
         }
 

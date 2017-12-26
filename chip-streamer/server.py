@@ -6,7 +6,10 @@ import sys
 import threading
 from threading import Lock
 import time
+import json
 from config import cfg
+# import device_config as dev
+from device_config import dev
 
 # akiko's helper fns
 sys.path.insert(0, '../python-aux')
@@ -59,26 +62,36 @@ gst_thr = None  # gstreamer thread
 
 class S(BaseHTTPRequestHandler):
 
-    def _print(self, s):
-        self.wfile.write('%s</br>' % s)
+    def _print(self, s, append_log = None):
+        # self.wfile.write('%s</br>' % s)
         logging.debug('%s' % s)
-
+        if append_log is not None:
+            append_log[0] = append_log[0] + s + '\n'
 
     def _set_headers(self, code):
         self.send_response(code)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-
     def get_param(self, params_dict, name):
         if not name in params_dict:
             return None
         return params_dict[name]
 
+    def send_json_response(self, _code=200, _log=''):
+        d = {'code': _code, 'log': _log}
+        s = json.dumps(d)
+
+        self.send_response(_code)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write('%s' % s)
 
     def do_GET(self):
         global gst_thr
         global q
+
+        json_rsp = {}
 
         code = 200
         qs = {}
@@ -93,11 +106,13 @@ class S(BaseHTTPRequestHandler):
         # for easier manipulation, convert to dictionary
         d = dict(params)
 
-        self._set_headers(code)
-        self._print("<html><body>")
+        # self._set_headers(code)
+        # self._print("<html><body>")
 
         # main command parser
         s = 'n/a'
+        log = ['']
+
         if 'act' in d:
             s = d['act']
             logging.debug('action: %s', s)
@@ -106,11 +121,12 @@ class S(BaseHTTPRequestHandler):
                 # todo:
                 # don't play video if video already playing, return error instead
 
-                self._print('Stream test video stream to localhost')
-                gst_thr = VideoThread(kwargs={'cmd':cfg['stream_cmd']})
+                self._print('Stream test video stream to localhost', log)
+                # make sure to strip the #nbf preproc variable (num-buffers=1 used for single snapshot)
+                gst_thr = VideoThread(kwargs={'cmd':cfg['stream_cmd'].replace('#nbf', ' ')})
                 gst_thr.start()
             elif s == 'stop':
-                self._print('Stopping stream')
+                self._print('Stopping stream', log)
 
                 if gst_thr is not None:
                     # First join thread if necessary
@@ -118,11 +134,11 @@ class S(BaseHTTPRequestHandler):
                         if gst_thr.isAlive():
                             gst_thr.stop_stream()
                             gst_thr.join()
-                            self._print('gst thread joined')
+                            self._print('gst thread joined', log)
                         else:
-                            self._print('gst thread was not alive, nothing to join')
+                            self._print('gst thread was not alive, nothing to join', log)
                     except:
-                        self._print('gst thread not initialized')
+                        self._print('gst thread not initialized', log)
                         pass
 
                     # Now, kill the gst process
@@ -130,49 +146,121 @@ class S(BaseHTTPRequestHandler):
 
                         try:
                             cli.kill_process(gst_thr.get_gst_process())
-                            self._print('gst process killed')
+                            self._print('gst process killed', log)
                         except OSError as e:
-                            print "-- OSError > ", e.errno
-                            print "-- OSError > ", e.strerror
-                            print "-- OSError > ", e.filename
+                            self._print("-- OSError > %s " % e.errno, log)
+                            self._print("-- OSError > %s " % e.strerror, log)
+                            self._print("-- OSError > %s " % e.filename, log)
                     else:
-                        self._print('gst process was not found, nothing to kill')
+                        self._print('gst process was not found, nothing to kill', log)
             elif s == 'hello':
-                self._print('Hello World :) !')
+                self._print('Hello World :) !', log)
             elif s == 'listconnections':
                 ret = cli.run_cli_sync('nmcli c')
                 for line in ret:
-                    self._print('%s' % line)
+                    self._print('%s' % line, log)
             elif s == 'listssids':
                 ret = cli.run_cli_sync('nmcli device wifi list')
                 for line in ret:
-                    self._print('%s' % line)
+                    self._print('%s' % line, log)
+            elif s == 'setresolution':
+                resolution = self.get_param(d, 'res')
+                if (resolution is None):
+                    code = 400 # bad request
+                else:
+                    dims = resolution.split('x')
+                    if len(dims) != 2:
+                        code = 400
+                        self._print('Invalid resolution: %s' % resolution, log)
+                    else:
+                        dev.camera.set_resolution(int(dims[0]), int(dims[1]))
+                        self._print('Resolution set to %s x %s' % (dev.camera.get_resolution().width,
+                                                                   dev.camera.get_resolution().height), log)
+            elif s == 'capture':
+                filename = self.get_param(d, 'filename')
+                if filename is None:
+                    code = 400
+                    self._print('Bad request, missing parameter: \'filename\'. Must tell sz how to name file on disk, e.g. white-rnd.jpg')
+                else:
+                    self.do_capture(filename)
+                # todo: error check
+            elif s == 'getimage':
+                filename = self.get_param(d, 'filename')
+                if filename is None:
+                    code = 400
+                    self._print('Bad request, missing parameter: \'filename\'')
+                else:
+                    try:
+                        img = self.load(cfg['image_store_path'] + filename)
+                        self.send_response(200)
+                        self.send_header('Content-type', 'image/jpeg')
+                        self.end_headers()
+
+                        self.wfile.write(img)
+                        return
+                    except:
+                        code = 404
+                        self._print('Error reading image %s' % filename)
             elif s == 'addssid':
                 self._print('Adding SSID to the auto-connect list')
                 ssid = self.get_param(d, 'ssid')
                 psk = self.get_param(d, 'psk')
-                self._print('SSID: %s' % (ssid, psk))
-                self._print('PSK: %s' % (ssid, psk))
+                self._print('SSID: %s' % (ssid, psk), log)
+                self._print('PSK: %s' % (ssid, psk), log)
                 ret = cli.run_cli_sync('nmcli device wifi connect \'%s\' password \'%s\' ifname wlan0' % (ssid, psk))
                 for line in ret:
-                    self._print('%s' % line)
+                    self._print('%s' % line, log)
             else:
-                self._print('Unknown act: %s' % (s))
+                self._print('Unknown act: %s' % (s), log)
 
-        self.wfile.write("</body></html>")
-
+        self.send_json_response(code, log[0])
 
     def do_HEAD(self):
         self._set_headers()
 
-        
     def do_POST(self):
             # Doesn't do anything with posted data
             content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
             post_data = self.rfile.read(content_length) # <--- Gets the data itself
             self._set_headers()
             self.wfile.write("<html><body><h1>POST!</h1><pre>" + post_data + "</pre></body></html>")
-        
+
+    def load(self, filename):
+        try:
+            fp = open(filename, 'rb')
+        except IOError:
+            self._print('Could not open file: ', filename)
+
+        try:
+            content = fp.read()
+        except IOError:
+            self._print('Could not read from file: ', filename)
+            return None
+
+        s = str(content)
+        b = bytes(s)
+        return b
+
+    def encode(self, file):
+        # buffer = bytes(file, 'UTF-8')
+        import base64
+        str = base64.b64encode(file)
+        return buffer
+
+    # todo: support for different file extensions / image compression
+    def do_capture(self, filename='snap.jpg'):
+        # note:
+        # this call is automated, sz makes a series of images in a specific order
+        # autofocus first
+
+        # todo: implement series of sync gst-launch shots for single hires images
+        # best way to implement is to keep it in a separate python module, so that it can be easily
+        # updated depending on device target group
+        cli.run_cli_sync(cfg['capture_cmd'].replace('#path', cfg['image_store_path'] + filename).replace('#width', str(dev.camera.get_resolution().width)).replace('#height', str(dev.camera.get_resolution().height)))
+        # todo: error check!
+
+        pass
+
 
 def run(server_class=HTTPServer, handler_class=S, port=cfg['port']):
     server_address = ('', port)
