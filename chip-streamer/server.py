@@ -56,11 +56,9 @@ class VideoThread(threading.Thread):
         return self.proc
 
 
-# Global vars
-gst_thr = None  # gstreamer thread
-
-
 class S(BaseHTTPRequestHandler):
+
+    gst_thr = None  # gstreamer thread
 
     def _print(self, s, append_log = None):
         # self.wfile.write('%s</br>' % s)
@@ -87,11 +85,33 @@ class S(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write('%s' % s)
 
-    def do_GET(self):
-        global gst_thr
-        global q
+    def stop_video_stream(self, log):
+        if self.gst_thr is None:
+            self._print('warning: can\'t stop stream. Thread is uninitialized', log)
+            return False
 
-        json_rsp = {}
+        try:
+            if self.gst_thr.isAlive():
+                self.gst_thr.stop_stream()
+                self.gst_thr.join()
+                self._print('gst thread joined', log)
+        except:
+            self._print('error: thread stop failed, unknown exception', log)
+        finally:
+            # kill the gst process
+            if self.gst_thr.get_gst_process() is not None:
+
+                try:
+                    cli.kill_process(self.gst_thr.get_gst_process())
+                    self._print('gst process killed', log)
+                except OSError as e:
+                    self._print("-- OSError > %s " % e.errno, log)
+                    self._print("-- OSError > %s " % e.strerror, log)
+                    self._print("-- OSError > %s " % e.filename, log)
+            else:
+                self._print('gst process was not found, nothing to kill', log)
+
+    def do_GET(self):
 
         code = 200
         qs = {}
@@ -121,38 +141,38 @@ class S(BaseHTTPRequestHandler):
                 # todo:
                 # don't play video if video already playing, return error instead
 
-                self._print('Stream test video stream to localhost', log)
-                # make sure to strip the #nbf preproc variable (num-buffers=1 used for single snapshot)
-                gst_thr = VideoThread(kwargs={'cmd':cfg['stream_cmd'].replace('#nbf', ' ')})
-                gst_thr.start()
+                self._print('Stream testvideo to recipient', log)
+                self.gst_thr = VideoThread(kwargs={'cmd': cfg['stream_cmd']})
+                self.gst_thr.start()
             elif s == 'stop':
-                self._print('Stopping stream', log)
+                self._print('Stop stream', log)
+                self.stop_video_stream()
 
-                if gst_thr is not None:
-                    # First join thread if necessary
-                    try:
-                        if gst_thr.isAlive():
-                            gst_thr.stop_stream()
-                            gst_thr.join()
-                            self._print('gst thread joined', log)
-                        else:
-                            self._print('gst thread was not alive, nothing to join', log)
-                    except:
-                        self._print('gst thread not initialized', log)
-                        pass
-
-                    # Now, kill the gst process
-                    if gst_thr.get_gst_process() is not None:
-
-                        try:
-                            cli.kill_process(gst_thr.get_gst_process())
-                            self._print('gst process killed', log)
-                        except OSError as e:
-                            self._print("-- OSError > %s " % e.errno, log)
-                            self._print("-- OSError > %s " % e.strerror, log)
-                            self._print("-- OSError > %s " % e.filename, log)
-                    else:
-                        self._print('gst process was not found, nothing to kill', log)
+                # if self.gst_thr is not None:
+                #     # First join thread if necessary
+                #     try:
+                #         if self.gst_thr.isAlive():
+                #             self.gst_thr.stop_stream()
+                #             self.gst_thr.join()
+                #             self._print('gst thread joined', log)
+                #         else:
+                #             self._print('gst thread was not alive, nothing to join', log)
+                #     except:
+                #         self._print('gst thread not initialized', log)
+                #         pass
+                #
+                #     # Now, kill the gst process
+                #     if self.gst_thr.get_gst_process() is not None:
+                #
+                #         try:
+                #             cli.kill_process(self.gst_thr.get_gst_process())
+                #             self._print('gst process killed', log)
+                #         except OSError as e:
+                #             self._print("-- OSError > %s " % e.errno, log)
+                #             self._print("-- OSError > %s " % e.strerror, log)
+                #             self._print("-- OSError > %s " % e.filename, log)
+                #     else:
+                #         self._print('gst process was not found, nothing to kill', log)
             elif s == 'hello':
                 self._print('Hello World :) !', log)
             elif s == 'listconnections':
