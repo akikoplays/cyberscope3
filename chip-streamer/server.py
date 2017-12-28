@@ -8,7 +8,6 @@ from threading import Lock
 import time
 import json
 from config import cfg
-# import device_config as dev
 from device_config import dev
 
 # akiko's helper fns
@@ -17,6 +16,23 @@ import cli
 
 import logging
 logging.basicConfig(filename=None, level=logging.DEBUG)
+
+
+# Global vars
+gst_thr = None  # gstreamer thread
+
+
+def get_gst_thread():
+    """
+    Returns pointer to gstreamer thread that is stored globally
+    """
+    global gst_thr
+    return gst_thr
+
+
+def set_gst_thread(thr):
+    global gst_thr
+    gst_thr = thr
 
 
 class VideoThread(threading.Thread):
@@ -30,6 +46,8 @@ class VideoThread(threading.Thread):
         self.proc = None
         self.stopFlag = False
         self.mutex = Lock()
+        self.playing = False
+
         return
 
     def run(self):
@@ -37,6 +55,10 @@ class VideoThread(threading.Thread):
         logging.debug('vt: starting cli %s', self.kwargs['cmd'])
 
         self.proc = cli.run_cli_async(self.kwargs['cmd'])
+        # marked as playing
+        self.mutex.acquire()
+        self.playing = True
+        self.mutex.release()
         while self.proc.poll() is None:
             self.mutex.acquire()
             try:
@@ -47,18 +69,32 @@ class VideoThread(threading.Thread):
 
             time.sleep(0.01)
 
+        # mark as stopped
+        self.mutex.acquire()
+        self.playing = False
+        self.mutex.release()
         logging.debug('vt: cli finished: %s ', self.kwargs['cmd'])
         pass
 
     def stop_stream(self):
         self.stopFlag=True
+
     def get_gst_process(self):
         return self.proc
 
+    @property
+    def is_playing(self):
+        try:
+            self.mutex.acquire()
+            ret = self.playing
+        except:
+            return None
+        finally:
+            self.mutex.release()
+        return ret
+
 
 class S(BaseHTTPRequestHandler):
-
-    gst_thr = None  # gstreamer thread
 
     def _print(self, s, append_log = None):
         # self.wfile.write('%s</br>' % s)
@@ -86,23 +122,23 @@ class S(BaseHTTPRequestHandler):
         self.wfile.write('%s' % s)
 
     def stop_video_stream(self, log):
-        if self.gst_thr is None:
+        if get_gst_thread() is None:
             self._print('warning: can\'t stop stream. Thread is uninitialized', log)
             return False
 
         try:
-            if self.gst_thr.isAlive():
-                self.gst_thr.stop_stream()
-                self.gst_thr.join()
+            if get_gst_thread().isAlive():
+                get_gst_thread().stop_stream()
+                get_gst_thread().join()
                 self._print('gst thread joined', log)
         except:
             self._print('error: thread stop failed, unknown exception', log)
         finally:
             # kill the gst process
-            if self.gst_thr.get_gst_process() is not None:
+            if get_gst_thread().get_gst_process() is not None:
 
                 try:
-                    cli.kill_process(self.gst_thr.get_gst_process())
+                    cli.kill_process(get_gst_thread().get_gst_process())
                     self._print('gst process killed', log)
                 except OSError as e:
                     self._print("-- OSError > %s " % e.errno, log)
@@ -138,41 +174,17 @@ class S(BaseHTTPRequestHandler):
             logging.debug('action: %s', s)
             if s == 'play':
 
-                # todo:
-                # don't play video if video already playing, return error instead
+                # if video already playing, stop it
+                if get_gst_thread() is not None and get_gst_thread().is_playing:
+                    self._print('Stopping previously playing stream', log)
+                    self.stop_video_stream(log)
 
                 self._print('Stream testvideo to recipient', log)
-                self.gst_thr = VideoThread(kwargs={'cmd': cfg['stream_cmd']})
-                self.gst_thr.start()
+                set_gst_thread(VideoThread(kwargs={'cmd': cfg['stream_cmd']}))
+                get_gst_thread().start()
             elif s == 'stop':
                 self._print('Stop stream', log)
-                self.stop_video_stream()
-
-                # if self.gst_thr is not None:
-                #     # First join thread if necessary
-                #     try:
-                #         if self.gst_thr.isAlive():
-                #             self.gst_thr.stop_stream()
-                #             self.gst_thr.join()
-                #             self._print('gst thread joined', log)
-                #         else:
-                #             self._print('gst thread was not alive, nothing to join', log)
-                #     except:
-                #         self._print('gst thread not initialized', log)
-                #         pass
-                #
-                #     # Now, kill the gst process
-                #     if self.gst_thr.get_gst_process() is not None:
-                #
-                #         try:
-                #             cli.kill_process(self.gst_thr.get_gst_process())
-                #             self._print('gst process killed', log)
-                #         except OSError as e:
-                #             self._print("-- OSError > %s " % e.errno, log)
-                #             self._print("-- OSError > %s " % e.strerror, log)
-                #             self._print("-- OSError > %s " % e.filename, log)
-                #     else:
-                #         self._print('gst process was not found, nothing to kill', log)
+                self.stop_video_stream(log)
             elif s == 'hello':
                 self._print('Hello World :) !', log)
             elif s == 'listconnections':

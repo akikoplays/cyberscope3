@@ -12,15 +12,27 @@ Note:
 as much as this was initially intended for CHIP, you can use it with RPI or MacOS or Linux desktops. The only thing you need are python2.7+gstreamer-1.0.
 
 
-# What you need to set up
+# How to read this
+
+This documentation, sadly, tries to encompass both system setup and application development. Some segments are only meant for firmware developers, that is how to setup software on the emulating device. Some segments are important for application developers because they explain how to communicate with the emulator, which commands are supported by it, what is the response format, etc.
+
+
+# Update: CHIP or ... ?
+
+Initially I started this emulator intending it for CHIP, because I had a piece lying somewhere, and I knew that CHIP had both wifi and ble combined, plus a decent, very fast booting linux distribution with apt.
+But after a while I started using MacOS and RPI for the same task, so you don't really need CHIP, you can set it up on another linux machine, or mac. You just need gst-1.0 invokable from shell, and python 2.7.9+ and that's it.
+
+
+# What you need in order to set up the emulating device
 
 CHIP already comes with python2.7.9 preinstalled, so you just need to add gstreamer1:
-apt install gstreamer-1.0 
-apt install gstreamer1.0-plugins-base
-apt install gstreamer1.0-plugins-good
-apt gstreamer1.0-plugins-bad
-apt install gstreamer1.0-plugins-ugly
-apt install python-gst-1.0
+
+    apt install gstreamer-1.0 
+    apt install gstreamer1.0-plugins-base
+    apt install gstreamer1.0-plugins-good
+    apt gstreamer1.0-plugins-bad
+    apt install gstreamer1.0-plugins-ugly
+    apt install python-gst-1.0
 
 
 # MacOS gstreamer-1.0 DIY compile 
@@ -30,6 +42,7 @@ https://github.com/GStreamer/cerbero
 
 managed to build gst-launch / inspect the basic package
 now building good, bad, and ugly plugins.
+
 
 ## Instructions
 
