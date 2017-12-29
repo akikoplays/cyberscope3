@@ -213,10 +213,22 @@ class S(BaseHTTPRequestHandler):
                 filename = self.get_param(d, 'filename')
                 if filename is None:
                     code = 400
-                    self._print('Bad request, missing parameter: \'filename\'. Must tell sz how to name file on disk, e.g. white-rnd.jpg')
+                    self._print('Bad request, missing parameter: \'filename\'. Must tell sz how to name file on disk, e.g. whitepic')
                 else:
-                    self.do_capture(filename)
-                # todo: error check
+                    res = self.do_scan(filename)
+                    if res != 0:
+                        code = 400
+                        self._print('single scan failed, error code: %s' % str(res), log)
+            elif s == 'scanseq':
+                filename = self.get_param(d, 'filename')
+                if filename is None:
+                    code = 400
+                    self._print('Bad request, missing parameter: \'filename\'. Must tell sz how to name file on disk, e.g. whitepic')
+                else:
+                    res = self.do_scan_seq(filename)
+                    if res != 0:
+                        code = 400
+                        self._print('scan sequence failed, error code: %s' % str(res), log)
             elif s == 'getimage':
                 filename = self.get_param(d, 'filename')
                 if filename is None:
@@ -234,6 +246,23 @@ class S(BaseHTTPRequestHandler):
                     except:
                         code = 404
                         self._print('Error reading image %s' % filename)
+            elif s == 'getimageseq':
+                filename = self.get_param(d, 'filename')
+                if filename is None:
+                    code = 400
+                    self._print('Bad request, missing parameter: \'filename\'', log)
+                else:
+                    try:
+                        img = self.load(cfg['image_store_path'] + filename + '.zip')
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/zip')
+                        self.send_header('Content-Disposition', 'attachment; filename="%s"' % (filename + '.zip'))
+                        self.end_headers()
+                        self.wfile.write(img)
+                        return
+                    except:
+                        code = 404
+                        self._print('Error reading pack %s' % (cfg['image_store_path'] + filename + '.zip'), log)
             elif s == 'addssid':
                 self._print('Adding SSID to the auto-connect list')
                 ssid = self.get_param(d, 'ssid')
@@ -281,22 +310,20 @@ class S(BaseHTTPRequestHandler):
         return buffer
 
     # todo: support for different file extensions / image compression
-    def do_capture(self, filename='snap.jpg'):
+    def do_scan_seq(self, filename):
         # note:
         # this call is automated, sz makes a series of images in a specific order
-        # autofocus first
+        # todo: autofocus first
 
-        # todo: implement series of sync gst-launch shots for single hires images
-        # best way to implement is to keep it in a separate python module, so that it can be easily
-        # updated depending on device target group
-        # cli.run_cli_sync(cfg['capture_cmd'].replace('#path', cfg['image_store_path'] + filename).replace('#width', str(dev.camera.get_resolution().width)).replace('#height', str(dev.camera.get_resolution().height)))
-        # todo: error check!
-
-        # todo:
-        # testing modular approach
+        # execute scan sequence
         scan = Scan()
-        scan.scan(filename)
-        pass
+        return scan.scan_seq(filename)
+
+    # todo: support for different file extensions / image compression
+    def do_scan(self, filename):
+        # execute single scan
+        scan = Scan()
+        return scan.scan(filename)
 
 
 def run(server_class=HTTPServer, handler_class=S, port=cfg['port']):
