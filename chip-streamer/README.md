@@ -1,18 +1,19 @@
     author: boris posavec
         
 
-# What is this
+# What is this project?
 
-Because sz2 was very belated, i had to resort to a couple of tricks in order to prepare some basic functionality for the upcoming product. At some point we decided to use gstreamer for the realtime video feed from the device. I checked and iOS had supporting framework for that. gstreamer1 seems to be a lot better than gstreamer-0.1 which was used in Jasmine (MYS02) back in the days.
+This is the repo for the sz20 emulator (and hopefully real hardware!). Emulator? Well, since sz2 hw is delayed, i started working on an emulator environment, that would cover basic functionality for the upcoming product. At some point we decided to use gstreamer for the realtime video feed from the device. I double-checked that both iOS and Android have supporting framework for that. gstreamer1 seems to be a lot better than gstreamer-0.1 which was used in Jasmine (MYS02) back in the days.
+
 
 This project is about setting up CHIP to stream video test signal over the network to a recipient (another gstreamer listening on a specific port).
 It covers how to prepare CHIP for gstreamer as well as how to develop python script for that, and on recipient' side how to enable video player for the incoming signal.
 
-Note:
-as much as this was initially intended for CHIP, you can use it with RPI or MacOS or Linux desktops. The only thing you need are python2.7+gstreamer-1.0.
 
+But that's not everything. It also prototypes image sequence scan and download, firmware update over internet, systemd interactions, logging mechanics, HTTP(s) server prototyping and more.
+ 
 
-# How to read this
+# How to read this manual?
 
 This documentation, sadly, tries to encompass both system setup and application development. Some segments are only meant for firmware developers, that is how to setup software on the emulating device. Some segments are important for application developers because they explain how to communicate with the emulator, which commands are supported by it, what is the response format, etc.
 
@@ -21,7 +22,7 @@ This documentation, sadly, tries to encompass both system setup and application 
 
 Initially I started this emulator with CHIP in mind, because I knew that CHIP had both stable wifi and ble, plus a decent, very fast(!) booting linux distribution with apt, systemd, wifi tools etc.
 
-But after a while I started using MacOS and RPI for the same task, so you don't really need CHIP, you can set it up on another linux machine, or mac. You just need gst-1.0 invokable from shell, and python 2.7.9+ and that's it.
+But with trivial modifications (or even none) you can use it with RPI or MacOS or Linux desktops. The only thing you need are python2.7+gstreamer-1.0.
 
 
 # Instructions for Firmware developers
@@ -100,6 +101,64 @@ Start server.py. It launches a http server listening on port 8001 (by default, b
 
     curl localhost:8001/?act=hello
     
+
+## Setting up sz20 server service
+
+For the production you want the server.py (main firmware) to boot up together with the system. The OS is systemd based, so you need to do a couple of things here, manually. Just follow these steps:
+
+* Copy the service file
+
+   
+    # copy the sz20-server.service file to /etc/systemd/system/
+    cp sz20-server.service /etc/systemd/system/
+    
+
+* Link additional python module(s) to python import path 
+
+
+    ln -s /path-to-sz20-firmware/python-aux/cli.py /usr/lib/python2.7/cli.py
+    
+
+* Create configuration from template
+
+
+    cd path-to-sz20-firmware
+    cp config.py.template config.py
+    nano config.py
+    
+Here is the sample config provided with the emulator that runs on CHIP:
+
+    #!/usr/bin/env python
+    
+    '''
+    Server configuration
+    server.py includes this file in order to determin various things such as gstreamer exe, port to use for bringing up HTTPS server, debug and logging options, etc.
+    
+    
+    '''
+    
+    cfg = { # in case you want to use gst-launch binary this is the cmd line for streaming
+            'stream_cmd' : 'gst-launch-1.0 videotestsrc ! jpegenc ! rtpjpegpay ! udpsink host="#host" port=5000',
+            # single snapshot cli command
+            'capture_cmd': 'gst-launch-1.0 videotestsrc num-buffers=1 ! video/x-raw,width=#width,height=#height ! jpegenc ! filesink location="#path"',
+            # Set this to False if you want to use python embedded version of gst (gi), 
+            # else gst-launch will be invoked as subprocess
+            'use_cmd' : True,
+            # where to store captured images (in case you are using server as systemd service, use absolute path here
+            'image_store_path': '/root/projects/cyberscope3/chip-streamer/images/',
+            # Server listenes at this port
+            'port' : 8001,
+            # Still TBD, but we will most probably support HTTPS
+            'https' : False,
+            'end' : True
+            }
+    
+The most important options are _image_store_path_ which has to be absolute, because server.py runs as a service (relative paths won't work in that case). And _capture_cmd_ and _stream_cmd_. Make sure gstreamer is properly installed, and in executable look up path of the system, in which case you don't need absolute path to be provided for the gst-launch-1.0.
+    
+    
+   
+    
+   
 
 # Instructions for Application / Client developers
 
@@ -217,4 +276,10 @@ To see the image you can use any browser, and type this in the URL bar:
     chip.local:8001?act=getimage&filename=white.jpg
 
     
+In order to capture a full image sequence, _scanseq_ command is provided:
+
+    # Run through different LED / Camera settings and acquire a set of images, called scan sequence
+    curl "chip.local:8001?act=scanseq&filename=base-file-name-for-the-set"
+    # Download the zip archive containing all the images from the sequence in a single pack
+    curl "chip.local:8001?act=getimageseq&filename=base-file-name-for-the-set"
     

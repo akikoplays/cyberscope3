@@ -175,13 +175,21 @@ class S(BaseHTTPRequestHandler):
             logging.debug('action: %s', s)
             if s == 'play':
 
+                # set default host and port if not provided by GET
+                host = self.get_param(d, 'host')
+                if host is None:
+                    host = '127.0.0.1'
+                port = self.get_param(d, 'port')
+                if port is None:
+                    port = '5000'
+
                 # if video already playing, stop it
                 if get_gst_thread() is not None and get_gst_thread().is_playing:
                     self._print('Stopping previously playing stream', log)
                     self.stop_video_stream(log)
 
                 self._print('Stream testvideo to recipient', log)
-                set_gst_thread(VideoThread(kwargs={'cmd': cfg['stream_cmd']}))
+                set_gst_thread(VideoThread(kwargs={'cmd': cfg['stream_cmd'].replace('#host', host).replace('#port', port)}))
                 get_gst_thread().start()
             elif s == 'stop':
                 self._print('Stop stream', log)
