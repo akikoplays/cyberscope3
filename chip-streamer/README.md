@@ -178,7 +178,7 @@ You will get a "Hello World :) " response back to notify you that the emulator i
 * *hello* - simply hails back, with code 200, use to see if server is up 
 * *listssids* - lists all visible SSIDs, returns them in json log field.
 * *listconnections* - lists all known wifi connections, that are already remembered by device, and that the wifi handler will try to resort to
-* *play* - starts video stream of resolution set by _setresolution_ action 
+* *play&host=receiverip[default:localhost]&port=receiverport[default:5000]* - starts video stream of resolution set by _setresolution_ action 
 * *stop* - stops video stream
 * *setresolution&res=640x400* - set resolution to a x b, note that depending on imaging device, there might be some resolution constraints, ie: 2560x1920 or 640x480 or 1024x720 or similar. Yet to be determined and documented.
 * *scan?filename=filename* - acquires a single image, filename string, which is the name of the file on disk (or non volatile memory)
