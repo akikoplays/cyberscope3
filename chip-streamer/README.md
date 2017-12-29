@@ -105,8 +105,8 @@ Start server.py. It launches a http server listening on port 8001 (by default, b
 * play - starts video stream of resolution set by setresolution action 
 * stop - stops video stream
 * setresolution&res=640x400 - set resolution to a x b, note that depending on imaging device, there might be some resolution constraints, ie: 2560x1920 or 640x480 or 1024x720 or similar. Yet to be determined and documented.
-* capture?filename=filename - acquires a single image, filename string, which is the name of the file on disk (or non volatile memory)
-* getimage?filename=filename - download the image by its filename from disk (see capture command)
+* scan?filename=filename - acquires a single image, filename string, which is the name of the file on disk (or non volatile memory)
+* getimage?filename=filename - download the image by its filename from disk (see scan command)
 
 # Response 
 
@@ -160,11 +160,11 @@ Next, you want to acquire a set of images (the so called _Scan Session_):
     
     # set HD resolution
     curl "chip.local:8001?act=setresolution=2560x1920"
-    curl "chip.local:8001?act=capture&filename=white.jpg"
+    curl "chip.local:8001?act=scan&filename=white.jpg"
     # todo: configure next LED
-    curl "chip.local:8001?act=capture&filename=uv.jpg"
+    curl "chip.local:8001?act=scan&filename=uv.jpg"
     # todo: configure next LED
-    curl "chip.local:8001?act=capture&filename=green.jpg"
+    curl "chip.local:8001?act=scan&filename=green.jpg"
     
 
 Finally, you want to download the image. Current implementation is pretty much HTTP standard approach, the image data is uploaded as Content image/jpeg (note: future implementations may support different file types, such as PNG or RAW).

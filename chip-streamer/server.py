@@ -9,6 +9,7 @@ import time
 import json
 from config import cfg
 from device_config import dev
+from scan import Scan
 
 # akiko's helper fns
 sys.path.insert(0, '../python-aux')
@@ -208,7 +209,7 @@ class S(BaseHTTPRequestHandler):
                         dev.camera.set_resolution(int(dims[0]), int(dims[1]))
                         self._print('Resolution set to %s x %s' % (dev.camera.get_resolution().width,
                                                                    dev.camera.get_resolution().height), log)
-            elif s == 'capture':
+            elif s == 'scan':
                 filename = self.get_param(d, 'filename')
                 if filename is None:
                     code = 400
@@ -288,9 +289,13 @@ class S(BaseHTTPRequestHandler):
         # todo: implement series of sync gst-launch shots for single hires images
         # best way to implement is to keep it in a separate python module, so that it can be easily
         # updated depending on device target group
-        cli.run_cli_sync(cfg['capture_cmd'].replace('#path', cfg['image_store_path'] + filename).replace('#width', str(dev.camera.get_resolution().width)).replace('#height', str(dev.camera.get_resolution().height)))
+        # cli.run_cli_sync(cfg['capture_cmd'].replace('#path', cfg['image_store_path'] + filename).replace('#width', str(dev.camera.get_resolution().width)).replace('#height', str(dev.camera.get_resolution().height)))
         # todo: error check!
 
+        # todo:
+        # testing modular approach
+        scan = Scan()
+        scan.scan(filename)
         pass
 
 

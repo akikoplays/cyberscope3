@@ -4,6 +4,7 @@ import threading
 from threading import Lock
 from config import cfg
 from device_config import dev
+from device_config import Led
 
 # akiko's helper fns
 sys.path.insert(0, '../python-aux')
@@ -20,7 +21,7 @@ class Scan():
     """
     scans = {'test':
                     {
-                        'leds': dev.Led(10, 20, 0),
+                        'leds':  Led(10, 20, 0),
                         'resolution': [2560, 1920],
                         'shutter': 50,
                         'end': True
