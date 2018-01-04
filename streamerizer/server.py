@@ -71,8 +71,17 @@ class VideoThread(threading.Thread):
             # clear framebuffer
             # run omxplayer file
             # check stop flag
-            cli.run_cli_sync('dd if=/dev/zero of=/dev/fb0')
-            cli.run_cli_sync('omxplayer %s/%s' % (self.kwargs['input'], self.videos[i]))
+            # cli.run_cli_sync('dd if=/dev/zero of=/dev/fb0')
+            # cli.run_cli_sync('omxplayer %s/%s' % (self.kwargs['input'], self.videos[i]))
+            self.proc = cli.run_cli_async('omxplayer %s/%s' % (self.kwargs['input'], self.videos[i]))
+            start_time = time.time()
+            while self.proc.poll() is None:
+                time.sleep(0.1)
+                if time.time() - start_time > 60.0
+                    # kill process and break
+                    cli.kill_process(self.proc)
+                    self._print('### omxplayer process killed due to non responsiveness ###')
+                    break
 
             # todo: randomize video playback
             i = i+1
