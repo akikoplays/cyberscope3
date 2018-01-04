@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Stopping streamerizer..."
+sudo pkill -9 python
 curl "http://raspberrypi.local:8010/?act=stop"
 sleep 4
 echo "Done."
