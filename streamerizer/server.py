@@ -80,7 +80,7 @@ class VideoThread(threading.Thread):
                 if time.time() - start_time > 60.0:
                     # kill process and break
                     cli.kill_process(self.proc)
-                    self._print('### omxplayer process killed due to non responsiveness ###')
+                    logging.debug('### omxplayer process killed due to non responsiveness ###')
                     break
 
             # todo: randomize video playback
