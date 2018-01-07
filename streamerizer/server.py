@@ -78,7 +78,7 @@ class VideoThread(threading.Thread):
             start_time = time.time()
             while self.proc.poll() is None:
                 time.sleep(0.1)
-                if time.time() - start_time > 60.0:
+                if time.time() - start_time > 20.0:
                     # kill process and break
                     cli.kill_process(self.proc)
                     logging.debug('### omxplayer process killed due to non responsiveness ###')
