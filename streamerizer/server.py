@@ -66,13 +66,14 @@ class VideoThread(threading.Thread):
         logging.debug('vt: starting omxplayer loop')
         self.videos = cli.collect_files_of_type(self.kwargs['input'], "avi")
         i = 0
+        
+	# clear the screen once
+	cli.run_cli_sync('dd if=/dev/zero of=/dev/fb0')
 
         while self.stopFlag is False:
             # clear framebuffer
             # run omxplayer file
             # check stop flag
-            # cli.run_cli_sync('dd if=/dev/zero of=/dev/fb0')
-            # cli.run_cli_sync('omxplayer %s/%s' % (self.kwargs['input'], self.videos[i]))
             self.proc = cli.run_cli_async('omxplayer %s/%s' % (self.kwargs['input'], self.videos[i]))
             start_time = time.time()
             while self.proc.poll() is None:
