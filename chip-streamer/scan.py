@@ -85,8 +85,8 @@ class Scan():
                 return err
 
             packer_cmd = packer_cmd + ' ' + cfg['image_store_path'] + filename + '.jpg'
+            logging.debug('Zipping : ' + packer_cmd)
 
-        logging.debug('Zipping : ', packer_cmd)
         proc, output = cli.run_cli_sync(packer_cmd)
         if proc.returncode != 0:
             logging.debug('Error zipping files, code: ' + str(proc.returncode))
